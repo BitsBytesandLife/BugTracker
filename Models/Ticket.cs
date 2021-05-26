@@ -63,7 +63,7 @@ namespace BugTracker.Models
 
         public virtual ICollection<TicketComment> Comments { get; set; }
 
-        public virtual ICollection<TicketHistory >History { get; set; }
+        public virtual ICollection<TicketHistory> History { get; set; }
 
         public virtual ICollection<Notification> Notifications { get; set; }
 

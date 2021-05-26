@@ -19,7 +19,7 @@ namespace BugTracker.Models
         public string Name { get; set; }
 
         [DisplayName("Description")]
-        public int Description { get; set; }
+        public string Description { get; set; }
 
 
         [NotMapped]

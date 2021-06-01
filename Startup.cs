@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BugTracker.Models;
+using BugTracker.Services.Interfaces;
+using BugTracker.Services;
 
 namespace BugTracker
 {
@@ -28,16 +30,23 @@ namespace BugTracker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(
-                  Configuration.GetConnectionString("DefaultConnection")));
-                  //Connection.GetConnectionString(Configuration)));
+              options.UseNpgsql(DataUtility.GetConnectionString(Configuration)));
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseNpgsql(
+            //      Configuration.GetConnectionString("DefaultConnection")));
+            //Connection.GetConnectionString(Configuration)));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddIdentity<BTUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddDefaultUI()
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddScoped<IBTRolesService, BTRolesService>();
+            services.AddScoped<IBTProjectService, BTProjectService>();
+            
             services.AddMvc();
         }
 

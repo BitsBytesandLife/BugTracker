@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using BugTracker.Models;
 using BugTracker.Services.Interfaces;
 using BugTracker.Services;
+using BugTracker.Services.Factories;
 
 namespace BugTracker
 {
@@ -40,13 +41,15 @@ namespace BugTracker
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddIdentity<BTUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddClaimsPrincipalFactory<BTUserClaimsPrincipalFactory>()
                 .AddDefaultUI()
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddScoped<IBTRolesService, BTRolesService>();
             services.AddScoped<IBTProjectService, BTProjectService>();
-            
+            services.AddScoped<IBTTicketService, BTTicketService>();
+            services.AddScoped<IBTCompanyInfoService, BTCompanyInfoService>();
             services.AddMvc();
         }
 

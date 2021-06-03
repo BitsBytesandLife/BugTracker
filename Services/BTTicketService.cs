@@ -1,5 +1,6 @@
 ﻿using BugTracker.Data;
 using BugTracker.Models;
+using BugTracker.Models.ViewModels.Enums;
 using BugTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,24 +27,19 @@ namespace BugTracker.Services
         }
         public async Task AssignTicketAsync(int ticketId, string userId)
         {
-            //Get your user
-            BTUser user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            Ticket ticket = await _context.Ticket.FirstOrDefaultAsync(t => t.Id == ticketId);
             try
             {
-                if (user != null)
+                if (ticket != null)
                 {
-                    Ticket ticket = await _context.Ticket.FirstOrDefaultAsync(t => t.Id == ticketId);
+
 
                     try
                     {
-                        if (ticket.DeveloperUser != null)
-                        {
-                            //remove dev users if its there
-                            ticket.DeveloperUser = null;
-                        }
 
-
-                        ticket.DeveloperUserId = user.Id;
+                        ticket.TicketStatusId = (await LookupTicketStatusIdAsync("Development")).Value;
+                        ticket.DeveloperUserId = userId;
                         await _context.SaveChangesAsync();
                     }
                     catch (Exception ex)
@@ -55,86 +51,128 @@ namespace BugTracker.Services
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"*** ERROR *** - Error No user found. --> {ex.Message}");
+                Debug.WriteLine($"*** ERROR *** - Error No Ticket found. --> {ex.Message}");
 
             }
         }
 
         public async Task<List<Ticket>> GetAllPMTicketsAsync(string userId)
         {
-            BTUser user = await _context.Users.Include(u => u.Projects)
-                                                    .ThenInclude(t => t.Tickets)
-                                                .FirstOrDefaultAsync(u => u.Id == userId);
-            List<Ticket> tickets = new();
-
-            try
-            {
-                if (await _rolesService.IsUserInRoleAsync(user, "ProjectManager"))
-                {
-                    tickets = user.Projects.SelectMany(p => p.Tickets).ToList();
-                }
-                return null;
-            }
-            catch (Exception ex)
-            {
-
-                Debug.WriteLine($"*** Error *** - User has no Tickets in the Project Role -> {ex.Message}");
-            }
-
-            return tickets;
-
-
-        }
-
-        public async Task<List<Ticket>> GetAllTicketsByCompanyAsync(int companyId)
-        {
-
-            List<Project> projects = await _projectService.GetAllProjectsByCompany(companyId);
+            List<Project> projects = await _projectService.ListUserProjectsAsync(userId);
             List<Ticket> tickets = projects.SelectMany(t => t.Tickets).ToList();
 
             return tickets;
         }
+        public async Task<List<Ticket>> GetAllTicketsByCompanyAsync(int companyId)
+        {
 
+            try
+            {
+                List<Ticket> tickets = await _context.Project.Include(p => p.Company)
+                                                .Where(p => p.CompanyId == companyId)
+                                                .SelectMany(p => p.Tickets)
+                                                    .Include(t => t.Attachments)
+                                                    .Include(t => t.Comments)
+                                                    .Include(t => t.History)
+                                                    .Include(t => t.DeveloperUser)
+                                                    .Include(t => t.OwnerUser)
+                                                    .Include(t => t.TicketPriority)
+                                                    .Include(t => t.TicketStatus)
+                                                    .Include(t => t.TicketType)
+                                                    .Include(t => t.Project)
+                                                    .ToListAsync();
+                return tickets;
+
+            }
+
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** ERROR *** - Error No Ticket by Compamy found. --> {ex.Message}");
+                throw;
+            }
+
+
+        }
         public async Task<List<Ticket>> GetAllTicketsByPriorityAsync(int companyId, string priorityName)
         {
             int priorityId = (await LookupTicketPriorityIdAsync(priorityName)).Value;
 
-            List<Project> projects = await _context.Project.Include(p => p.Tickets).Where(p => p.CompanyId == companyId).ToListAsync();
-            List<Ticket> tickets = projects.SelectMany(t => t.Tickets).ToList();
 
-            return tickets.Where(t => t.TicketPriorityId == priorityId).ToList();
+
+            return await _context.Project.Where(p => p.CompanyId == companyId)
+                                            .SelectMany(p => p.Tickets)
+                                            .Include(t => t.Attachments)
+                                            .Include(t => t.Comments)
+                                            .Include(t => t.DeveloperUser)
+                                            .Include(t => t.OwnerUser)
+                                            .Include(t => t.TicketPriority)
+                                            .Include(t => t.TicketStatus)
+                                            .Include(t => t.TicketType)
+                                            .Include(t => t.Project)
+                                            .Where(t => t.TicketPriorityId == priorityId).ToListAsync();
         }
-
         public async Task<List<Ticket>> GetAllTicketsByRoleAsync(string role, string userId)
         {
-            BTUser user = await _context.Users.Include(u => u.Projects)
-                                                    .ThenInclude(t => t.Tickets)
-                                                .FirstOrDefaultAsync(u => u.Id == userId);
             List<Ticket> tickets = new();
 
             try
             {
-                if ((await _rolesService.ListUserRolesAsync(user)).Contains(role))
+                if (string.Compare(role, Roles.Developer.ToString()) == 0)
                 {
-                    tickets = user.Projects.SelectMany(p => p.Tickets).ToList();
+                    tickets = await _context.Project.Include(p => p.Company)
+                                                    .SelectMany(p => p.Tickets)
+                                                        .Include(t => t.Attachments)
+                                                        .Include(t => t.Comments)
+                                                        .Include(t => t.History)
+                                                        .Include(t => t.DeveloperUser)
+                                                        .Include(t => t.OwnerUser)
+                                                        .Include(t => t.TicketPriority)
+                                                        .Include(t => t.TicketStatus)
+                                                        .Include(t => t.TicketType)
+                                                        .Include(t => t.Project)
+                                                            .ThenInclude(p => p.Members)
+                                                        .Include(t => t.Project)
+                                                            .ThenInclude(p => p.ProjectPriority)
+                                                        .Where(t => t.DeveloperUserId == userId).ToListAsync();
                 }
-                return null;
+                else if (string.Compare(role, Roles.Submitter.ToString()) == 0)
+                {
+                    tickets = await _context.Ticket
+                                .Include(t => t.Attachments)
+                                .Include(t => t.Comments)
+                                .Include(t => t.DeveloperUser)
+                                .Include(t => t.OwnerUser)
+                                .Include(t => t.TicketPriority)
+                                 .Include(t => t.TicketStatus)
+                                 .Include(t => t.TicketType)
+                                 .Include(t => t.Project)
+                                    .ThenInclude(p => p.Members)
+                                  .Include(t => t.Project)
+                                  .ThenInclude(p => p.ProjectPriority)
+                                  .Where(t => t.OwnerUserId == userId).ToListAsync();
+
+                }
+
+                else if (string.Compare(role, Roles.ProjectManager.ToString()) == 0)
+                {
+                    tickets = await GetAllPMTicketsAsync(userId);
+                }
+
+                return tickets;
             }
             catch (Exception ex)
             {
-
-                Debug.WriteLine($"*** Error *** - Users has no tickets in the this Role -> {ex.Message}");
+                Debug.WriteLine($"*** ERROR *** - Error No TicketsByRole found. --> {ex.Message}");
+                throw;
             }
-
-            return tickets;
-
-         
+            
         }
-
         public async Task<List<Ticket>> GetAllTicketsByStatusAsync(int companyId, string statusName)
         {
 
             int ticketStatusId = (await LookupTicketStatusIdAsync(statusName)).Value;
+            
+                                            
             List<Project> projects = await _context.Project.Include(p => p.Tickets).Where(p => p.CompanyId == companyId).ToListAsync();
             List<Ticket> tickets = projects.SelectMany(t => t.Tickets).ToList();
 
@@ -143,6 +181,7 @@ namespace BugTracker.Services
 
         public async Task<List<Ticket>> GetAllTicketsByTypeAsync(int companyId, string typeName)
         {
+
             int ticketTypeId = (await LookupTicketTypeIdAsync(typeName)).Value;
             List<Project> projects = await _context.Project.Include(p => p.Tickets).Where(p => p.CompanyId == companyId).ToListAsync();
             List<Ticket> tickets = projects.SelectMany(t => t.Tickets).ToList();
@@ -152,67 +191,176 @@ namespace BugTracker.Services
 
         public async Task<List<Ticket>> GetArchivedTicketsByCompanyAsync(int companyId)
         {
-            List<Project> projects = await _projectService.GetAllProjectsByCompany(companyId);
-            List<Ticket> tickets = projects.SelectMany(t => t.Tickets).ToList();
-            return await _context.Ticket.Where(t => t.Archived == true).ToListAsync();
+            // List<Project> projects = await _projectService.GetAllProjectsByCompany(companyId);
+            // List<Ticket> tickets = projects.SelectMany(t => t.Tickets).ToList();
+            // return await _context.Ticket.Where(t => t.Archived == true).ToListAsync();
+
+            try
+            {
+                List<Ticket> tickets = await _context.Project.Include(p => p.Company)
+                                                .Where(p => p.CompanyId == companyId)
+                                                .SelectMany(p => p.Tickets)
+                                                    .Include(t => t.Attachments)
+                                                    .Include(t => t.Comments)
+                                                    .Include(t => t.History)
+                                                    .Include(t => t.DeveloperUser)
+                                                    .Include(t => t.OwnerUser)
+                                                    .Include(t => t.TicketPriority)
+                                                    .Include(t => t.TicketStatus)
+                                                    .Include(t => t.TicketType)
+                                                    .Include(t => t.Project)
+                                                    .Where(t => t.Archived == true)
+                                                    .ToListAsync();
+                return tickets;
+
+            }
+
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** Error *** - No Project Tickets by Role found -> {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<List<Ticket>> GetProjectTicketsByRoleAsync(string role, string userId, int projectId)
         {
-
-            BTUser user = await _context.Users.Include(u => u.Projects)
-                                                   .ThenInclude(t => t.Tickets)
-                                               .FirstOrDefaultAsync(u => u.Id == userId);
             List<Ticket> tickets = new();
-
-
             try
             {
-                if ((await _rolesService.ListUserRolesAsync(user)).Contains(role))
-                { 
-                    tickets = user.Projects.SelectMany(p => p.Tickets).ToList();
-                    //tickets = await _context.Ticket.Include(t => t.ProjectId == projectId).ToListAsync();
+                tickets = (await GetAllTicketsByRoleAsync(role, userId)).Where(t => t.ProjectId == projectId).ToList();
 
-                }
-                return null;
+                return tickets;
             }
             catch (Exception ex)
             {
-
-                Debug.WriteLine($"*** Error *** - User has no Tickets in the Project Role -> {ex.Message}");
+                Debug.WriteLine($"*** ERROR *** - Error No Project Tickets By Role found. --> {ex.Message}");
+                throw;
+                throw;
             }
-
-           
-            return await _context.Ticket.Include(t => t.ProjectId == projectId).ToListAsync();
         }
 
         public async Task<BTUser> GetTicketDeveloperAsync(int ticketId)
         {
+            try
+            {
+                BTUser developer = new();
 
-            BTUser btUser = new();
+                Ticket ticket = await _context.Ticket.Include(t => t.DeveloperUser).FirstOrDefaultAsync(t => t.Id == ticketId);
 
-            Ticket ticket = await _context.Ticket.Include(t => t.DeveloperUser).FirstOrDefaultAsync(t => t.Id == ticketId);
+                if (ticket?.DeveloperUserId != null)
+                {
+                    developer = ticket.DeveloperUser;
+                }
 
-            return ticket.DeveloperUser;
+                return developer;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** ERROR *** - Error No TicketDeveloper found. --> {ex.Message}");
+                throw;
+            }
+           
 
         }
 
         public async Task<int?> LookupTicketPriorityIdAsync(string priorityName)
         {
-            return (await _context.TicketPriority.FirstOrDefaultAsync(t => t.Name == priorityName)).Id;
+
+            try
+            {
+                TicketPriority priority = await _context.TicketPriority.FirstOrDefaultAsync(t => t.Name == priorityName);
+                return priority?.Id;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** ERROR *** - Error No Ticket Priority found. --> {ex.Message}");
+                throw;
+            }
+           
         }
 
         public async Task<int?> LookupTicketStatusIdAsync(string statusName)
         {
-            return (await _context.TicketStatus.FirstOrDefaultAsync(t => t.Name == statusName)).Id;
+
+            try
+            {
+                TicketStatus status = await _context.TicketStatus.FirstOrDefaultAsync(t => t.Name == statusName);
+                return status?.Id;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** ERROR *** - Error No Ticket Status found. --> {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<int?> LookupTicketTypeIdAsync(string typeName)
         {
-            return (await _context.TicketStatus.FirstOrDefaultAsync(t => t.Name == typeName)).Id;
+            try
+            {
+                TicketType type = await _context.TicketType.FirstOrDefaultAsync(t => t.Name == typeName);
+                return type?.Id;
+            }
+            catch (Exception ex)
+            {
+
+                Debug.WriteLine($"*** ERROR *** - Error No Ticket Type found. --> {ex.Message}");
+                throw;
+            }  
+        }
+
+        public async Task<List<Ticket>> GetProjectTicketsByStatusAsync(string typeName, int conpamyId, int projectId)
+        {
+            List<Ticket> tickets = new();
+
+            try
+            {
+                tickets = (await GetAllTicketsByStatusAsync(conpamyId, typeName))
+                            .Where(t => t.ProjectId == projectId).ToList();
+                return tickets;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** ERROR *** - Error No Project Ticket by Status found. --> {ex.Message}");
+                throw;
+            }
         }
 
 
+        public async Task<List<Ticket>> GetProjectTicketsByTypeAsync(string typeName, int conpamyId, int projectId)
+        {
+            List<Ticket> tickets = new();
+
+            try
+            {
+                tickets = (await GetAllTicketsByTypeAsync(conpamyId, typeName))
+                            .Where(t => t.ProjectId == projectId).ToList();
+                return tickets;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** ERROR *** - Error No Project Ticket by Type found. --> {ex.Message}");
+                throw;
+            }
+        }
+
+
+        public async Task<List<Ticket>> GetProjectTicketsByPriorityAsync(string typeName, int conpamyId, int projectId)
+        {
+            List<Ticket> tickets = new();
+
+            try
+            {
+                tickets = (await GetAllTicketsByPriorityAsync(conpamyId, typeName))
+                            .Where(t => t.ProjectId == projectId).ToList();
+                return tickets;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"*** ERROR *** - Error No Project Ticket by Priority found. --> {ex.Message}");
+                throw;
+            }
+        }
 
     }
 

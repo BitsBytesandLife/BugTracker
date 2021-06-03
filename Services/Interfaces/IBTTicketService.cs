@@ -34,6 +34,10 @@ namespace BugTracker.Services.Interfaces
 
         Task<int?> LookupTicketTypeIdAsync(string typeName);
 
+        Task<List<Ticket>> GetProjectTicketsByTypeAsync(string typeName, int conpamyId, int projectId);
 
+        Task<List<Ticket>> GetProjectTicketsByPriorityAsync(string typeName, int conpamyId, int projectId);
+
+        Task<List<Ticket>> GetProjectTicketsByStatusAsync(string typeName, int conpamyId, int projectId);
     }
 }

@@ -12,6 +12,7 @@ using BugTracker.Models.ViewModels;
 using BugTracker.Services.Interfaces;
 using BugTracker.Extentions;
 using BugTracker.Models.ViewModels.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugTracker.Controllers
 {
@@ -20,11 +21,13 @@ namespace BugTracker.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IBTProjectService _projectService;
         private readonly IBTCompanyInfoService _infoService;
-        public ProjectsController(ApplicationDbContext context, IBTProjectService projectService, IBTCompanyInfoService infoService)
+        private readonly UserManager<BTUser> _userManager;
+        public ProjectsController(ApplicationDbContext context, IBTProjectService projectService, IBTCompanyInfoService infoService, UserManager<BTUser> userManager)
         {
             _context = context;
             _projectService = projectService;
             _infoService = infoService;
+            _userManager = userManager;
         }
 
         // GET: Projects
@@ -56,10 +59,23 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["CompanyId"] = new SelectList(_context.Company, "Id", "Name");
-            ViewData["ProjectPriorityId"] = new SelectList(_context.Set<ProjectPriority>(), "Id", "Id");
+            BTUser currentUser = await _userManager.GetUserAsync(User);
+            int companyId = User.Identity.GetCompanyId().Value;
+            //ViewData["CompanyId"] = new SelectList(_context.Company, "Id", "Name");
+
+            if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(Roles.ProjectManager.ToString()))
+            {
+                ViewData["ProjectPriorityId"] = new SelectList(_context.Set<ProjectPriority>(), "Id", "Name");
+            }
+            else
+            {
+                //ToDo: SweetAlet 
+                //Only PM or Admin can make Project
+                return RedirectToAction("Index");
+            }
+            
             return View();
         }
 
@@ -68,15 +84,24 @@ namespace BugTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CompanyId,Name,Description,StartDate,EndDate,ProjectPriorityId,ImageFileName,ImageFileData,ImageFileContentType,Archived")] Project project)
+        //public async Task<IActionResult> Create([Bind("Id,CompanyId,Name,Description,StartDate,EndDate,ProjectPriorityId,ImageFileName,ImageFileData,ImageFileContentType,Archived")] Project project)
+
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,ProjectPriorityId")] Project project)
         {
             if (ModelState.IsValid)
             {
+               BTUser currentUser = await _userManager.GetUserAsync(User);
+
+                //int companyId = User.Identity.GetCompanyId().Value; 
+
+                project.CompanyId = currentUser.CompanyId;
+                project.Company = currentUser.Company;
+               
                 _context.Add(project);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CompanyId"] = new SelectList(_context.Company, "Id", "Name", project.CompanyId);
+            //ViewData["CompanyId"] = new SelectList(_context.Company, "Id", "Name", project.CompanyId);
             ViewData["ProjectPriorityId"] = new SelectList(_context.Set<ProjectPriority>(), "Id", "Id", project.ProjectPriorityId);
             return View(project);
         }
@@ -223,6 +248,23 @@ namespace BugTracker.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> AllProjects()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Project> project = await _projectService.GetAllProjectsByCompany(companyId);
+
+            return View(project);
+        }
+
+
+        public async Task<IActionResult> MyProjects() 
+        {
+            string currentUser = (await _userManager.GetUserAsync(User)).Id;
+            List<Project> myProjects = await _projectService.ListUserProjectsAsync(currentUser);
+
+            return View(myProjects);
+        }
 
         private bool ProjectExists(int id)
         {

@@ -27,7 +27,7 @@ namespace BugTracker.Models
         public virtual Ticket Ticket { get; set; }
         public virtual BTUser User { get; set; }
 
-        // Virtual is not needed in your using EF
+        //Virtual is not needed in your using EF
        //public Ticket Ticket { get; set; }
        //public BTUser User { get; set; }
     }

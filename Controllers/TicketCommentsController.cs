@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BugTracker.Data;
 using BugTracker.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugTracker.Controllers
 {
     public class TicketCommentsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<BTUser> _userManager;
 
-        public TicketCommentsController(ApplicationDbContext context)
+
+        public TicketCommentsController(ApplicationDbContext context, UserManager<BTUser> userManager = null)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: TicketComments
@@ -63,9 +67,14 @@ namespace BugTracker.Controllers
         {
             if (ModelState.IsValid)
             {
+                string userId = _userManager.GetUserId(User);
+                ticketComment.UserId = userId;
+                ticketComment.Created = DateTimeOffset.Now;
+                
+
                 _context.Add(ticketComment);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details","Tickets", new { id = ticketComment.TicketId } );
             }
             ViewData["TicketId"] = new SelectList(_context.Ticket, "Id", "Title", ticketComment.TicketId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", ticketComment.UserId);
@@ -120,7 +129,7 @@ namespace BugTracker.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Tickets", new { id = ticketComment.TicketId });
             }
             ViewData["TicketId"] = new SelectList(_context.Ticket, "Id", "Title", ticketComment.TicketId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", ticketComment.UserId);

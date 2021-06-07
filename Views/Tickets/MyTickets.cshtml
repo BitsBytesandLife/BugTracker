@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<BugTracker.Models.Ticket>
 @using Microsoft.AspNetCore.Identity
-@inject UserManager<BTUser> BTUserManger
+@inject UserManager<BTUser> BTUserManager
 
 @{
     ViewData["Title"] = "Index";
-    BTUser bTUser = await BTUserManger.GetUserAsync(User);
+    BTUser btUser = await BTUserManager.GetUserAsync(User);
 }
 
-<h1>My Tickets</h1>
+<h1>@btUser.FirstName's Tickets</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -55,7 +55,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.Where(t => t.DeveloperUserId == bTUser.Id))
+        @foreach (var item in Model.Where(t => t.DeveloperUserId == btUser.Id))
         {
             <tr>
                 <td>
@@ -147,7 +147,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.Where(t => t.OwnerUserId == bTUser.Id))
+        @foreach (var item in Model.Where(t => t.OwnerUserId == btUser.Id))
         {
             <tr>
                 <td>

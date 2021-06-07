@@ -376,6 +376,10 @@ namespace BugTracker.Services
         public async Task<List<BTUser>> UsersNotOnProjectAsync(int projectId, int companyId)
         {
             //List  Users Not On Project
+            //List<BTUser> users = await _context.Users.Where(u => u.Projects.All(p => p.Id != projectId) 
+            //                                                    && u.CompanyId == companyId).ToListAsync();
+            //return users;
+
             List<BTUser> users = await _context.Users.Where(u => u.Projects.All(p => p.Id != projectId)).ToListAsync();
 
             return users.Where(u => u.CompanyId == companyId).ToList();

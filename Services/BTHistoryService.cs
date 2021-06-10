@@ -24,44 +24,167 @@ namespace BugTracker.Services
             _companyInfoService = companyInfoService;
         }
 
-        public async Task AddHistory(Ticket oldTicket, Ticket newTicket, string userId)
+        public async Task AddHistoryAsync(Ticket oldTicket, Ticket newTicket, string userId)
         {
-            BTUser user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user != null)
+            if (oldTicket == null && newTicket != null)
             {
+                TicketHistory history = new()
+                {
+                    TicketId = newTicket.Id,
+                    Property = "",
+                    OldValue = "",
+                    Created = DateTimeOffset.Now,
+                    UserId = userId,
+                    Description = "New Ticket Created"
+                };
+
+                await _context.TicketHistory.AddAsync(history);
+                await _context.SaveChangesAsync();
+
+            }
+            else 
+            {
+                //Check Title
+                if (oldTicket.Title != newTicket.Title)
+                {
+                    TicketHistory history = new()
+                    {
+                        TicketId = newTicket.Id,
+                        Property = "Title",
+                        OldValue = oldTicket.Title,
+                        NewValue = newTicket.Title,
+                        Created = DateTimeOffset.Now,
+                        UserId = userId,
+                        Description = $"New Ticket Title: {newTicket.Title}"
+                    };
+
+                    await _context.TicketHistory.AddAsync(history);
+                }
+                //Check Desprip
+                if (oldTicket.Description != newTicket.Description)
+                {
+                    TicketHistory history = new()
+                    {
+                        TicketId = newTicket.Id,
+                        Property = "Description",
+                        OldValue = oldTicket.Description,
+                        NewValue = newTicket.Description,
+                        Created = DateTimeOffset.Now,
+                        UserId = userId,
+                        Description = $"New Ticket Description: {newTicket.Description}"
+                    };
+
+                    await _context.TicketHistory.AddAsync(history);
+                }
+                //Check Type
+                if (oldTicket.TicketTypeId != newTicket.TicketTypeId)
+                {
+                    TicketHistory history = new()
+                    {
+                        TicketId = newTicket.Id,
+                        Property = "TicketType",
+                        OldValue = oldTicket.TicketType.Name,
+                        NewValue = newTicket.TicketType.Name,
+                        Created = DateTimeOffset.Now,
+                        UserId = userId,
+                        Description = $"New Ticket Type: {newTicket.TicketType.Name}"
+                    };
+
+                    await _context.TicketHistory.AddAsync(history);
+                }
+                //Check Prior
+                if (oldTicket.TicketPriorityId != newTicket.TicketPriorityId)
+                {
+                    TicketHistory history = new()
+                    {
+                        TicketId = newTicket.Id,
+                        Property = "TicketPriority",
+                        OldValue = oldTicket.TicketPriority.Name,
+                        NewValue = newTicket.TicketPriority.Name,
+                        Created = DateTimeOffset.Now,
+                        UserId = userId,
+                        Description = $"New Ticket Priority: {newTicket.TicketPriority.Name}"
+                    };
+
+                    await _context.TicketHistory.AddAsync(history);
+                }
+                //Check Status
+                if (oldTicket.TicketStatusId != newTicket.TicketStatusId)
+                {
+                    TicketHistory history = new()
+                    {
+                        TicketId = newTicket.Id,
+                        Property = "TicketStatus",
+                        OldValue = oldTicket.TicketStatus.Name,
+                        NewValue = newTicket.TicketStatus.Name,
+                        Created = DateTimeOffset.Now,
+                        UserId = userId,
+                        Description = $"New Ticket Status: {newTicket.TicketStatus.Name}"
+                    };
+
+                    await _context.TicketHistory.AddAsync(history);
+                }
+                //Check Dev User
+                if (oldTicket.DeveloperUser != newTicket.DeveloperUser)
+                {
+                    TicketHistory history = new()
+                    {
+                        TicketId = newTicket.Id,
+                        Property = "Developer",
+                        OldValue = oldTicket.DeveloperUser?.FullName ?? "Not Assigned",
+                        NewValue = newTicket.DeveloperUser.FullName,
+                        Created = DateTimeOffset.Now,
+                        UserId = userId,
+                        Description = $"New Ticket Developer User: {newTicket.DeveloperUser.FullName}"
+                    };
+
+                    await _context.TicketHistory.AddAsync(history);
+                }
+
+            }
+
+            //BTUser user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            //if (user != null)
+            //{
                 
 
 
 
-            }
+            //}
            
 
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
-        public async Task<List<TicketHistory>> GetCompanyTicketsHistories(int companyId)
+        public async Task<List<TicketHistory>> GetCompanyTicketsHistoriesAsync(int companyId)
         {
+
+            Company company = await _context.Company
+                                        .Include(c => c.Projects)
+                                            .ThenInclude(p => p.Tickets)
+                                                .ThenInclude(t => t.History)
+                                            .FirstOrDefaultAsync(c => c.Id == companyId);
             List<TicketHistory> ticketHistories = new();
-            List<Ticket> tickets = new();
-            List<Project> projects = new();
-
-            projects = await _companyInfoService.GetAllProjectsAsync(companyId);
-            tickets = projects.SelectMany(t => t.Tickets).ToList();
-
-            ticketHistories = tickets.SelectMany(t => t.History).ToList();
+            ticketHistories = company.Projects
+                                    .SelectMany(p => p.Tickets)
+                                    .SelectMany(t => t.History).ToList();
 
             return ticketHistories;
         }
 
-        public async Task<List<TicketHistory>> GetProjectTicketsHistories(int projectId)
+        public async Task<List<TicketHistory>> GetProjectTicketsHistoriesAsync(int projectId)
         {
+
+            Project project = await _context.Project
+                                    .Include(p => p.Tickets)
+                                        .ThenInclude(t => t.History)
+                                    .FirstOrDefaultAsync(p => p.Id == projectId);
+            
             List<TicketHistory> ticketHistories = new();
 
-            ticketHistories = await _context.TicketHistory
-                                    .Include(t => t.Ticket)
-                                    .ThenInclude(t => t.ProjectId == projectId)
-                                    .ToListAsync();
+            ticketHistories = project.Tickets.SelectMany(t => t.History).ToList();
+            
             return ticketHistories;
         }
     }

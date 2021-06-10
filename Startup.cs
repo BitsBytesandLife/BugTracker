@@ -16,6 +16,7 @@ using BugTracker.Models;
 using BugTracker.Services.Interfaces;
 using BugTracker.Services;
 using BugTracker.Services.Factories;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace BugTracker
 {
@@ -50,6 +51,9 @@ namespace BugTracker
             services.AddScoped<IBTProjectService, BTProjectService>();
             services.AddScoped<IBTTicketService, BTTicketService>();
             services.AddScoped<IBTCompanyInfoService, BTCompanyInfoService>();
+            services.AddScoped<IBTHistoryService, BTHistoryService>();
+            services.AddScoped<IBTFileService, BTFileService>();
+            services.AddScoped<IEmailSender, GmailEmailService>();
             services.AddMvc();
         }
 
@@ -79,7 +83,7 @@ namespace BugTracker
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=LandingPage}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

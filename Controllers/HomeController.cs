@@ -41,8 +41,17 @@ namespace BugTracker.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
+            
+
+            return View();
+        }
+
+        public async Task<IActionResult> Dashboard()
+        {
+
+
             int companyId = User.Identity.GetCompanyId().Value;
             BTUser currentUser = await _userManager.GetUserAsync(User);
 
@@ -57,27 +66,29 @@ namespace BugTracker.Controllers
             };
 
             return View(dashBoardViewModel);
+            //DashboardViewModel dashBoard = new();
+
+            //int companyId = User.Identity.GetCompanyId().Value;
+            //BTUser currentUser = await _userManager.GetUserAsync(User);
+
+            //List<Project> projects = await _projectService.ListUserProjectsAsync(currentUser.Id);
+            //dashBoard.Projects = projects;
+
+            //List<Ticket> tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId);
+            //dashBoard.Tickets = tickets;
+
+            //List<BTUser> users = await  _infoService.GetAllMembersAsync(companyId);
+
+            //Company currentCompany = await _infoService.GetCompanyInfoByIdAsync(companyId);
+            //dashBoard.CurrentCompany = currentCompany;
+
+            //return View(dashBoard);
         }
 
-        public async Task<IActionResult> Dashboard()
+
+        public IActionResult LandingPage()
         {
-            DashboardViewModel dashBoard = new();
-
-            int companyId = User.Identity.GetCompanyId().Value;
-            BTUser currentUser = await _userManager.GetUserAsync(User);
-
-            List<Project> projects = await _projectService.ListUserProjectsAsync(currentUser.Id);
-            dashBoard.Projects = projects;
-
-            List<Ticket> tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId);
-            dashBoard.Tickets = tickets;
-
-            List<BTUser> users = await  _infoService.GetAllMembersAsync(companyId);
-
-            Company currentCompany = await _infoService.GetCompanyInfoByIdAsync(companyId);
-            dashBoard.CurrentCompany = currentCompany;
-
-            return View(dashBoard);
+            return View();
         }
 
 
@@ -90,6 +101,24 @@ namespace BugTracker.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> PieChartMethod()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Project> projects = await _projectService.GetAllProjectsByCompany(companyId);
+
+            List<object> chartData = new();
+            chartData.Add(new object[] { "ProjectName", "TicketCount" });
+
+            foreach (Project prj in projects)
+            {
+                chartData.Add(new object[] { prj.Name, prj.Tickets.Count() });
+            }
+
+            return Json(chartData);
         }
     }
 }

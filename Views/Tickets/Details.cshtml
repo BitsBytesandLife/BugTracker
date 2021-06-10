@@ -28,7 +28,11 @@
                             else
                             {
                                 <i>No Developer assiged</i>
-                            }
+                                @if (User.IsInRole(Roles.Admin.ToString()) || (currentPM.Id == currentUser.Id))
+                                {
+                                 <a class="btn btn-primary" asp-action="AssignTicket" asp-controller="Tickets" asp-route-id="@Model.Id">Add Dev</a>
+                                }   
+                        }
                         </p>
                         <div>
                             <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
@@ -38,6 +42,7 @@
                 </div>
             </div>
             <br />
+
             <div class="container">
                 <div class="card">
                     <div class="card-body shadow-lg">
@@ -100,14 +105,14 @@
                                     {
                                         <div class="form-group">
 
-                                            <input type="submit" value="Save" class="btn btn-primary-custom-cf" />
+                                            <input type="submit" value="Save" class="btn btn-primary" />
                                         </div>
                                     }
                                     else
                                     {
                                         <div class="form-group">
 
-                                            <input type="submit" value="Save" class="btn btn-primary-custom-cf" disabled />
+                                            <input type="submit" value="Save" class="btn btn-primary" disabled />
                                         </div>
                                     }
                                 </form>

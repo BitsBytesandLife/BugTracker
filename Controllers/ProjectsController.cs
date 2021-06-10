@@ -248,6 +248,68 @@ namespace BugTracker.Controllers
             return View(model);
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> RemoveUsers(int id)
+        {
+            ProjectMembersViewModel model = new();
+
+            int companyId = User.Identity.GetCompanyId().Value;
+
+
+            
+          Project project = (await _projectService.GetAllProjectsByCompany(companyId))
+                                    .FirstOrDefault(p => p.Id == id);
+
+
+
+
+            model.Project = project;
+            List<BTUser> developer = await _infoService.GetMembersInRoleAsync(Roles.Developer.ToString(), companyId);
+            List<BTUser> submitter = await _infoService.GetMembersInRoleAsync(Roles.Submitter.ToString(), companyId);
+
+            //List<BTUser> users = await _projectService.UsersNotOnProjectAsync(id, companyId);
+            List<BTUser> users = developer.Concat(submitter).ToList();
+            //List<BTUser> members = project.Members.ToList();
+            List<string> members = project.Members.Select(m => m.Id).ToList();
+            model.Users = new MultiSelectList(users, "Id", "FullName", members);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReomveUsers(ProjectMembersViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (model.SelectedUsers != null)
+                {
+                    List<string> memberIds = (await _projectService.GetMembersWithoutPMAsync(model.Project.Id))
+                                                .Select(m => m.Id).ToList();
+
+                    foreach (string id in memberIds)
+                    {
+                        await _projectService.RemoveUserFromProjectAsync(id, model.Project.Id);
+                    }
+
+                    foreach (string id in model.SelectedUsers)
+                    {
+                        await _projectService.RemoveUsersFromProjectByRoleAsync(id ,model.Project.Id);
+                    }
+                    //goto project details
+                    return RedirectToAction("Details", "Projects", new { id = model.Project.Id });
+                }
+                else
+                {
+                    //send an error message
+                }
+            }
+            return View(model);
+        }
+
+
+
         public async Task<IActionResult> AllProjects()
         {
             int companyId = User.Identity.GetCompanyId().Value;
@@ -265,6 +327,7 @@ namespace BugTracker.Controllers
 
             return View(myProjects);
         }
+
 
         private bool ProjectExists(int id)
         {

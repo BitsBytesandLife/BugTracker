@@ -279,23 +279,21 @@ namespace BugTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ReomveUsers(ProjectMembersViewModel model)
+        public async Task<IActionResult> RemoveUsers(ProjectMembersViewModel model)
         {
             if (ModelState.IsValid)
             {
                 if (model.SelectedUsers != null)
                 {
                     List<string> memberIds = (await _projectService.GetMembersWithoutPMAsync(model.Project.Id))
-                                                .Select(m => m.Id).ToList();
-
-                    foreach (string id in memberIds)
-                    {
-                        await _projectService.RemoveUserFromProjectAsync(id, model.Project.Id);
-                    }
+                                              .Select(m => m.Id).ToList();
 
                     foreach (string id in model.SelectedUsers)
                     {
-                        await _projectService.RemoveUsersFromProjectByRoleAsync(id ,model.Project.Id);
+
+                        
+                        await _projectService.RemoveUserFromProjectAsync(id, model.Project.Id);
+                        
                     }
                     //goto project details
                     return RedirectToAction("Details", "Projects", new { id = model.Project.Id });
@@ -307,8 +305,6 @@ namespace BugTracker.Controllers
             }
             return View(model);
         }
-
-
 
         public async Task<IActionResult> AllProjects()
         {

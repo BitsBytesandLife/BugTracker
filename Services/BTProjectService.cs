@@ -296,37 +296,32 @@ namespace BugTracker.Services
         }
 
         //async Task<bool>
-        public async Task RemoveUserFromProjectAsync(string role, int projectId)
+        public async Task RemoveUserFromProjectAsync(string userId, int projectId)
         {
-            //Remove a user from a project 
             try
             {
-                List<BTUser> members = await GetProjectMembersByRoleAsync(projectId, role);
+                BTUser user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
                 Project project = await _context.Project.FirstOrDefaultAsync(p => p.Id == projectId);
 
-                foreach (BTUser btUser in members)
+                if (await IsUserOnProject(userId, projectId))
                 {
                     try
                     {
-                        project.Members.Remove(btUser);
+                        project.Members.Remove(user);
                         await _context.SaveChangesAsync();
                     }
                     catch (Exception)
                     {
-
                         throw;
                     }
                 }
-
-
             }
             catch (Exception ex)
             {
-
-                Debug.WriteLine($"*** ERROR *** - Error Removing users from project. --> {ex.Message}");
+                Debug.WriteLine($" ERROR  - Error removing user to project.  --> {ex.Message}");
             }
-
         }
+
 
         public async Task RemoveUsersFromProjectByRoleAsync(string role, int projectId)
         {

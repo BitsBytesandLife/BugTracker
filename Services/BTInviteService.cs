@@ -1,5 +1,8 @@
-﻿using BugTracker.Models;
+﻿using BugTracker.Data;
+using BugTracker.Models;
 using BugTracker.Services.Interfaces;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,29 +12,89 @@ namespace BugTracker.Services
 {
     public class BTInviteService : IBTInviteService
     {
-        public Task<bool> AcceptInviteAsync(Guid? token, string userId)
+        private readonly ApplicationDbContext _context;
+        private readonly IBTProjectService _projectService;
+        private readonly IEmailSender _emailService;
+
+        public BTInviteService(ApplicationDbContext context, IBTProjectService projectService,
+                                  IEmailSender emailService
+                                  )
         {
-            throw new NotImplementedException();
+            _context = context;
+            _projectService = projectService;
+            _emailService = emailService;
         }
 
-        public Task<bool> AnyInviteAsync(Guid token, string email)
+        public async Task<Invite> GetInviteAsync(Guid token, string email)
         {
-            throw new NotImplementedException();
+            Invite invite = await _context.Invite.Include(i => i.CompanyId)
+                                            .Include(i => i.Project)
+                                            .Include(i => i.Invitor)
+                                            .FirstOrDefaultAsync(i => i.CompanyToken == token && i.InviteeEmail == email);
+
+            return invite;
         }
 
-        public Task<Invite> GetInviteAsync(Guid token, string email)
+        public async Task<Invite> GetInviteAsync(int id)
         {
-            throw new NotImplementedException();
+            Invite invite = await _context.Invite.Include(i => i.CompanyId)
+                                            .Include(i => i.Project)
+                                            .Include(i => i.Invitor)
+                                            .FirstOrDefaultAsync(i => i.Id == id);
+
+            return invite;
         }
 
-        public Task<Invite> GetInviteAsync(int id)
+        public async Task<bool> AnyInviteAsync(Guid token, string email)
         {
-            throw new NotImplementedException();
+            return await _context.Invite.AnyAsync(i => i.CompanyToken == token && i.InviteeEmail == email && i.IsValid == true);
         }
 
-        public Task<bool> ValidateInviteCodeAsync(Guid? token)
+        public async Task<bool> AcceptInviteAsync(Guid? code, string userId)
         {
-            throw new NotImplementedException();
+
+            Invite invite = await _context.Invite.FirstOrDefaultAsync(i => i.CompanyToken == code);
+
+            if (invite == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                //invite.IsValid = false;
+                invite.InviteeId = userId;
+                _context.SaveChanges();
+
+                return true;
+            }
+            catch
+            { throw; }
+
+
+        }
+
+        public async Task<bool> ValidateInviteCodeAsync(Guid? code)
+        {
+            if (code == null)
+            {
+                return false;
+            }
+
+            var invite = await _context.Invite.FirstOrDefaultAsync(i => i.CompanyToken == code);
+
+            if ((DateTime.Now - (await _context.Invite.FirstOrDefaultAsync(i => i.CompanyToken == code)).InviteDate).TotalDays <= 7)
+            {
+
+                bool result = (await _context.Invite.FirstOrDefaultAsync(i => i.CompanyToken == code)).IsValid;
+
+                return result;
+            }
+            else
+            {
+                return false;
+            }
+
         }
     }
 }

@@ -674,7 +674,7 @@ namespace BugTracker.Data.Migrations
 
             modelBuilder.Entity("BugTracker.Models.Invite", b =>
                 {
-                    b.HasOne("BugTracker.Models.Company", "Compamy")
+                    b.HasOne("BugTracker.Models.Company", "company")
                         .WithMany("Invites")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -694,7 +694,7 @@ namespace BugTracker.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Compamy");
+                    b.Navigation("company");
 
                     b.Navigation("Invitee");
 

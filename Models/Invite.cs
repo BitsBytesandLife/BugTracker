@@ -32,7 +32,7 @@ namespace BugTracker.Models
 
         public bool IsValid { get; set; }
 
-        public virtual Company Compamy { get; set; }
+        public virtual Company Company { get; set; }
 
         public virtual BTUser Invitor { get; set; }
 

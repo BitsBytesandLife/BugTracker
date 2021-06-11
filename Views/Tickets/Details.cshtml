@@ -21,6 +21,17 @@
                         <h3>Ticket: @Html.DisplayFor(model => model.Title) </h3>
                         <p>Project: @Html.DisplayFor(model => model.Project.Name)</p>
                         <p>
+                            Project Manager: @if (currentPM != null)
+                            {
+                                @currentPM.FullName
+                            }
+                            else
+                            {
+                                <i>No Project Manager </i>
+                            }
+
+                        </p>
+                        <p>
                             Developer: @if (Model.DeveloperUser != null)
                             {
                                 @Html.DisplayFor(model => model.DeveloperUser.FullName)
@@ -28,11 +39,11 @@
                             else
                             {
                                 <i>No Developer assiged</i>
-                                @if (User.IsInRole(Roles.Admin.ToString()) || (currentPM.Id == currentUser.Id))
+                                @if (User.IsInRole(Roles.Admin.ToString()) || (currentPM?.Id == currentUser.Id))
                                 {
-                                 <a class="btn btn-primary" asp-action="AssignTicket" asp-controller="Tickets" asp-route-id="@Model.Id">Add Dev</a>
-                                }   
-                        }
+                                    <a class="btn btn-primary" asp-action="AssignTicket" asp-controller="Tickets" asp-route-id="@Model.Id">Add Dev</a>
+                                }
+                            }
                         </p>
                         <div>
                             <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
@@ -60,13 +71,27 @@
                 <div class="card">
                     <div class="card-body shadow-lg">
                         <h3>Ticket Attacment:</h3>
-                        <form asp-action="Edit">
+                        <form asp-action="Create" asp-controller="TicketAttachments" enctype="multipart/form-data" method="post">
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <input type="hidden" asp-for="Id" />
-                            <div class="form-group">
-                                <input type="submit" value="Save" class="btn btn-primary" />
+                            <input type="hidden" asp-for="@Model.Id" name="TicketId">
+
+
+                            <div class="media-body ml-3">
+                                <label class="form-label d-block mb-2">Add Attachment</label>
+                                <label>
+                                    Description
+                                    <input asp-for="@Model.Attachments.FirstOrDefault().Description" type="text" class="form-control" />
+                                </label><br />
+                                <label class="btn btn-outline-primary btn-sm">
+                                    <input asp-for="@Model.Attachments.FirstOrDefault().FormFile" type="file" />
+                                </label>
+                                <button type="submit" class="btn btn-outline-secondary btn-sm md-btn-flat">Submit</button>
                             </div>
                         </form>
+
+
+
+
                     </div>
                 </div>
             </div>
@@ -99,9 +124,9 @@
                                         </div>
                                     </div>
                                     @if (User.IsInRole(Roles.Admin.ToString()) ||
-                                      (currentPM.Id == currentUser.Id) ||
-                                      (currentUser.Id == Model.DeveloperUserId) ||
-                                      (currentUser.Id == Model.OwnerUserId))
+                                     (currentPM?.Id == currentUser.Id) ||
+                                     (currentUser.Id == Model.DeveloperUser?.Id) ||
+                                     (currentUser.Id == Model.OwnerUserId))
                                     {
                                         <div class="form-group">
 
@@ -154,6 +179,10 @@
     </div>
     <div class="row">
         <div class="col-6">
+            <div>
+
+            </div>
+
         </div>
 
         <div class="col">

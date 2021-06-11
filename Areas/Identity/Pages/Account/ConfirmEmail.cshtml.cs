@@ -43,5 +43,8 @@ namespace BugTracker.Areas.Identity.Pages.Account
             StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
             return Page();
         }
+
+       
+
     }
 }

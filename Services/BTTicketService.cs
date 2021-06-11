@@ -87,7 +87,7 @@ namespace BugTracker.Services
 
             catch (Exception ex)
             {
-                Debug.WriteLine($"*** ERROR *** - Error No Ticket by Compamy found. --> {ex.Message}");
+                Debug.WriteLine($"*** ERROR *** - Error No Ticket by company found. --> {ex.Message}");
                 throw;
             }
 

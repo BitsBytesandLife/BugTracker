@@ -106,6 +106,7 @@ namespace BugTracker.Services
                         Description = $"New Ticket Priority: {newTicket.TicketPriority.Name}"
                     };
 
+                    
                     await _context.TicketHistory.AddAsync(history);
                 }
                 //Check Status
@@ -143,18 +144,7 @@ namespace BugTracker.Services
 
             }
 
-            //BTUser user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-
-            //if (user != null)
-            //{
-                
-
-
-
-            //}
-           
-
-            //throw new NotImplementedException();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<List<TicketHistory>> GetCompanyTicketsHistoriesAsync(int companyId)

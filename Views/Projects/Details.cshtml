@@ -7,11 +7,30 @@
 <h1>Details</h1>
 
 <div>
-    <h4>Project: @Html.DisplayFor(model => model.Name)</h4>
-    <p><i>Description: @Html.DisplayFor(model => model.Description)</i></p>
-    <div>
-        <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-        <a asp-action="Index">Back to List</a>
+    <div class="row">
+        <div class="card shadow-lg">
+            <div class="card-body">
+                <h4>Project: @Html.DisplayFor(model => model.Name)</h4>
+                <p><i>Description: @Html.DisplayFor(model => model.Description)</i></p>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <div class="row">
+                        <div class="col">
+                            <a class="btn btn-primary" asp-action="AssignPM" asp-controller="Projects" asp-route-id="@Model.Id">Assign PM</a>
+                            <a class="btn btn-primary" asp-action="ManageUserRoles" asp-controller="UserRoles">Manage Team</a>
+                        </div>
+                        <div class="col">
+
+                        </div>
+                    </div>
+                }
+                <div>
+                    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+                    <a asp-action="Index">Back to List</a>
+                </div>
+            </div>
+        </div>
     </div>
     <hr />
     <div class="row">
@@ -20,17 +39,17 @@
                 <div class="card-body">
                     <dl class="row">
                         @*<dt class="col-sm-2">
-                            @Html.DisplayNameFor(model => model.Name)
-                        </dt>
-                        <dd class="col-sm-10">
-                            @Html.DisplayFor(model => model.Name)
-                        </dd>
-                        <dt class="col-sm-2">
-                            @Html.DisplayNameFor(model => model.Description)
-                        </dt>
-                        <dd class="col-sm-10">
-                            @Html.DisplayFor(model => model.Description)
-                        </dd>*@
+                                @Html.DisplayNameFor(model => model.Name)
+                            </dt>
+                            <dd class="col-sm-10">
+                                @Html.DisplayFor(model => model.Name)
+                            </dd>
+                            <dt class="col-sm-2">
+                                @Html.DisplayNameFor(model => model.Description)
+                            </dt>
+                            <dd class="col-sm-10">
+                                @Html.DisplayFor(model => model.Description)
+                            </dd>*@
                         <dt class="col-sm-2">
                             @Html.DisplayNameFor(model => model.StartDate)
                         </dt>
@@ -98,39 +117,40 @@
                     {
                         <p>This projects doen't have any members</p>
                     }
-               
-                        <a class="btn btn-primary" asp-action="AssignUsers" asp-controller="Projects" asp-route-id="@Model.Id">Manage Users </a>
+
+                    <a class="btn btn-primary" asp-action="AssignUsers" asp-controller="Projects" asp-route-id="@Model.Id">Manage Users </a>
                 </div>
             </div>
             @*<br />
-            <div class="card shadow-lg">
-                <div class="card-body">
+                <div class="card shadow-lg">
+                    <div class="card-body">
 
-                </div>
-            </div>*@
+                    </div>
+                </div>*@
             <br />
             <div class="card shadow-lg">
                 <div class="card-body text-justify">
-                    Members:
+                    Tickets:
                     @if (Model.Tickets.Count() >= 1)
                     {
                         @foreach (Ticket ticket in Model.Tickets)
                         {
                             <p>Title: @ticket.Title</p>
                             <p>Description: @ticket.Description</p>
-                            <p>Created: @ticket.Created</p>
-                            <p>Owner: @ticket.OwnerUser.FullName</p>
-                            if (ticket.DeveloperUser != null)
-                            {
-                                <p>Developer: @ticket.DeveloperUser.FullName</p>
-                            }
-                            else
-                            {
-                                <p>Developer: No developer was assigned.</p>
-                            }
-                            <p>Status: @ticket.TicketStatus.Name </p>
-                            <p>Priority: @ticket.TicketPriority.Name</p>
-                            <p>Type: @ticket.TicketType.Name</p>
+                            <p>Created: @ticket.Created.ToString("d")</p>
+                            <p>Owner: @ticket.OwnerUser?.FullName</p>
+                                if (ticket.DeveloperUser != null)
+                                {
+                                    <p>Developer: @ticket.DeveloperUser?.FullName</p>
+                                }
+                                else
+                                {
+                                    <p>Developer: No developer was assigned.</p>
+                                }
+                                @*<p>Status: @ticket.TicketStatus.Name </p>
+                                <p>Priority: @ticket.TicketPriority.Name</p>
+                                <p>Type: @ticket.TicketType.Name</p>*@
+                            <hr />
                         }
                     }
                     else
@@ -139,7 +159,7 @@
                     }
                 </div>
             </div>
-          
+
 
         </div>
     </div>

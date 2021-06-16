@@ -24,19 +24,20 @@ namespace BugTracker.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IDataProtector _protector;
         private readonly IBTInviteService _inviteService;
+        
 
         public InvitesController(ApplicationDbContext context, 
                                   IBTProjectService projectService, 
                                   UserManager<BTUser> userManager, 
                                   IEmailSender emailSender, 
-                                  IDataProtector protector, 
+                                  IDataProtectionProvider dataProtectionProvider, 
                                   IBTInviteService inviteService)
         {
             _context = context;
             _projectService = projectService;
             _userManager = userManager;
             _emailSender = emailSender;
-            _protector = protector.CreateProtector("BugTracker");
+            _protector = dataProtectionProvider.CreateProtector("Bug Tracker"); ;
             _inviteService = inviteService;
         }
 
@@ -72,12 +73,13 @@ namespace BugTracker.Controllers
         // GET: Invites/Create
         public async Task<IActionResult> Create()
         {
-
+            int companyId = User.Identity.GetCompanyId().Value;
             InviteViewModel model = new();
 
             if (User.IsInRole("Admin"))
             {
-                model.ProjectsList = new SelectList(_context.Project, "Id", "Name");
+                model.ProjectsList = new SelectList(await _projectService.GetAllProjectsByCompany(companyId),"Id","Name");
+               //model.ProjectsList = new SelectList(_context.Project, "Id", "Name");
             }
             else if (User.IsInRole("ProjectManager"))
             {

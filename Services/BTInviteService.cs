@@ -27,7 +27,7 @@ namespace BugTracker.Services
 
         public async Task<Invite> GetInviteAsync(Guid token, string email)
         {
-            Invite invite = await _context.Invite.Include(i => i.CompanyId)
+            Invite invite = await _context.Invite.Include(i => i.Company)
                                             .Include(i => i.Project)
                                             .Include(i => i.Invitor)
                                             .FirstOrDefaultAsync(i => i.CompanyToken == token && i.InviteeEmail == email);
@@ -37,7 +37,7 @@ namespace BugTracker.Services
 
         public async Task<Invite> GetInviteAsync(int id)
         {
-            Invite invite = await _context.Invite.Include(i => i.CompanyId)
+            Invite invite = await _context.Invite.Include(i => i.Company)
                                             .Include(i => i.Project)
                                             .Include(i => i.Invitor)
                                             .FirstOrDefaultAsync(i => i.Id == id);

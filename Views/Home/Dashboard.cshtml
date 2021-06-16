@@ -9,83 +9,86 @@
 @inject IBTTicketService TicketService
 @inject UserManager<BTUser> UserManager
 <link href="~/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+<div style="margin-left: 280px;margin-right: 30px; padding: 30px; overflow:auto">
 
-<div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
-    <div class="col">
-        <div class="card radius-10 overflow-hidden shadow-lg">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div>
-                        <h4 class="my-1">Active Projects</h4>
-                        <span>@Model.Projects.Count() </span>
+    <div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
+        <div class="col">
+            <div class="card radius-10 overflow-hidden shadow-lg">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <h4 class="my-1">Active Projects</h4>
+                            <span>@Model.Projects.Count() </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="" id="w-chart5"></div>
+            </div>
+
+            <div class="card radius-10 overflow-hidden shadow-lg">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <h4 class="my-1">Total Tickets</h4>
+                            <span>@Model.Tickets.Count() </span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="" id="w-chart5"></div>
-        </div>
 
-        <div class="card radius-10 overflow-hidden shadow-lg">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div>
-                        <h4 class="my-1">Total Tickets</h4>
-                        <span>@Model.Tickets.Count() </span>
-                    </div>
+            <div class="card radius-10 overflow-hidden shadow-lg">
+                <div class="card-body">
+                    <p>Total Users: @Model.CurrentCompany.Members.Count()</p>
+                    <hr />
+                    <p>Total Tickets: @Model.Tickets.Count()</p>
+                    <hr />
+                    <p>Total Developers:@Model.Tickets.GroupBy(t => t.DeveloperUserId).Count()</p>
+                    <hr />
+                    <p>Total Submitter:@Model.Tickets.GroupBy(t => t.OwnerUserId).Count()</p>
+                    <hr />
+                    <p>Unassinged Tickets:@Model.Tickets.GroupBy(t => t.DeveloperUserId == null).Count()</p>
                 </div>
             </div>
         </div>
+        <div class="row clearfix">
+            <div class="col-lg-4 col-md-6">
+                <div class="card">
+                    <div class="body">
+                        <div id="chart1">
 
-        <div class="card radius-10 overflow-hidden shadow-lg">
-            <div class="card-body">
-                <p>Total Users: @Model.CurrentCompany.Members.Count()</p>
-                <hr />
-                <p>Total Tickets: @Model.Tickets.Count()</p>
-                <hr />
-                <p>Total Developers:@Model.Tickets.GroupBy(t => t.DeveloperUserId).Count()</p>
-                <hr />
-                <p>Total Submitter:@Model.Tickets.GroupBy(t => t.OwnerUserId).Count()</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card">
+                    <div class="body">
+                        <div id="chart3D">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card">
+                    <div class="body">
+                        <div id="donut">
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="row clearfix">
-        <div class="col-lg-4 col-md-6">
-            <div class="card">
-                <div class="body">
-                    <div id="chart1">
 
-                    </div>
-                </div>
-            </div>
+    <!--<div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
+        <div class="col">
+            Assign Users
+
         </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card">
-                <div class="body">
-                    <div id="chart3D">
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card">
-                <div class="body">
-                    <div id="donut">
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
-    <div class="col">
-        Assign Users
-
-    </div>
-    <div class="col">
-        Assign Tickets
-        @*<form asp-action="AssignTicket" method="post">
+        <div class="col">
+            Assign Tickets-->
+    @*<form asp-action="AssignTicket" method="post">
             <input asp-for="@Model.Tickets.Where(t => t.Id == )" hidden />
 
             <input asp-for="@Model.Ticket.ProjectId" hidden />
@@ -104,47 +107,46 @@
                 </div>
             </div>
         </form>*@
-    </div>
-</div>
+    <!--</div>
+    </div>-->
+    @*<div class="col">
 
-    <div class="col">
-
-        <div class="col-lg-12">
-            <div class="card radius-10">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <p class="mb-0 text-secondary">Store Visitors</p>
-                            <h4 class="my-1">Unassigned Tickets</h4>
-                            <p class="mb-0 font-13 text-danger">
-                                <i class='bx bxs-down-arrow align-middle'></i>12.4% Since last week
-                            </p>
+            <div class="col-lg-12">
+                <div class="card radius-10">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <p class="mb-0 text-secondary">Store Visitors</p>
+                                <h4 class="my-1">Unassigned Tickets</h4>
+                                <p class="mb-0 font-13 text-danger">
+                                    <i class='bx bxs-down-arrow align-middle'></i>12.4% Since last week
+                                </p>
+                            </div>
+                            <div class="widgets-icons bg-light-danger text-danger ms-auto">
+                                <i class='bx bxs-binoculars'></i>
+                            </div>
                         </div>
-                        <div class="widgets-icons bg-light-danger text-danger ms-auto">
-                            <i class='bx bxs-binoculars'></i>
-                        </div>
-                    </div>
-                    <div id="chart3"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card radius-10">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h4 class="my-1">Analytics</h4>
-                            <p class="mb-0 font-13 text-success">
-                                <span>@Model.Tickets.Count() </span>
-                            </p>
-                        </div>
-
+                        <div id="chart3"></div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+            <div class="col">
+                <div class="card radius-10">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <h4 class="my-1">Analytics</h4>
+                                <p class="mb-0 font-13 text-success">
+                                    <span>@Model.Tickets.Count() </span>
+                                </p>
+                            </div>
 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+    <!--myTickets-->
     <div class="row ">
         <h6 class="mb-0 text-uppercase">Project Tickets</h6>
         <hr />
@@ -152,7 +154,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="allTickets2" class="table table-striped table-bordered">
+                        <table id="allTickets" class="table table-striped table-bordered">
                             <thead>
                                 <tr>
                                     <th>
@@ -164,12 +166,12 @@
                                     <th>
                                         Updated
                                     </th>
-                                    <th>
-                                        Archived
-                                    </th>
-                                    <th>
-                                        ArchivedDate
-                                    </th>
+                                    @*<th>
+                                            @Html.DisplayNameFor(model => model.Archived)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.ArchivedDate)
+                                        </th>*@
                                     <th>
                                         Description
                                     </th>
@@ -177,20 +179,20 @@
                                         Project
                                     </th>
                                     <th>
-                                        TicketPriority
+                                        Priority
                                     </th>
                                     <th>
-                                        TicketType
+                                        Type
                                     </th>
                                     <th>
-                                        TicketStatus
+                                        Status
                                     </th>
-                                    <th>
-                                        OwnerUser
-                                    </th>
-                                    <th>
-                                        DeveloperUser
-                                    </th>
+                                    @*<th>
+                                            @Html.DisplayNameFor(model => model.OwnerUser)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.DeveloperUser)
+                                        </th>*@
                                     <th></th>
                                 </tr>
                             </thead>
@@ -208,12 +210,6 @@
                                             @Html.DisplayFor(modelItem => item.Updated)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Archived)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.ArchivedDate)
-                                        </td>
-                                        <td>
                                             @Html.DisplayFor(modelItem => item.Description)
                                         </td>
                                         <td>
@@ -228,479 +224,209 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.TicketStatus.Name)
                                         </td>
+
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.OwnerUser.FullName)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.DeveloperUser.FullName)
-                                        </td>
-                                        <td>
-                                            @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
+                                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                                         </td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
+
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="col"></div>
 
-    </div>
 
-    <!--myProjects-->
-    <div class="row ">
-        <h6 class="mb-0 text-uppercase">My Project</h6>
-        <hr />
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="myProjects" class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Name
-                                </th>
-                                <th>
-                                    Start Date
-                                </th>
-                                <th>
-                                    End Date
-                                </th>
-                                <th>
-                                    Description
-                                </th>
-                                <th>
-                                    Project
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Projects)
-                            {
-                                <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Name)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.StartDate)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.EndDate)
-                                    </td>
+                    <div class="col"></div>
 
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Description)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.ProjectPriority)
-                                    </td>
-                                </tr>
+
+
+                    <!--myProjects-->
+                    <div class="row ">
+                        <h6 class="mb-0 text-uppercase">My Project</h6>
+                        <hr />
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="allProjects" class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Name
+                                                </th>
+                                                <th>
+                                                    Start Date
+                                                </th>
+                                                <th>
+                                                    End Date
+                                                </th>
+                                                <th>
+                                                    Description
+                                                </th>
+                                                <th>
+                                                    Project
+                                                </th>
+                                                <th>
+
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.Projects)
+                                            {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Name)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.StartDate)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.EndDate)
+                                                </td>
+
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Description)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.ProjectPriority)
+                                                </td>
+                                                <td>
+                                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                                </td>
+                                            </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bootstrap JS -->
+                    <script src="~/js/bootstrap.bundle.min.js"></script>
+                    <!--plugins-->
+                    <script src="~/js/jquery.min.js"></script>
+                    <script src="~/plugins/simplebar/js/simplebar.min.js"></script>
+                    <script src="~/plugins/metismenu/js/metisMenu.min.js"></script>
+                    <script src="~/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+                    <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
+                    <script src="~/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+                    <script src="~/js/table-datatable.js"></script>
+                    <!--app JS-->
+                    <script src="~/js/app.js"></script>
+
+                    <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
+                    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+                    @section Scripts{
+                        <script>
+                            $(function () {
+                                $("#allTickets").DataTable({
+                                    "responsive": true, "lengthChange": false, "autoWidth": false,
+                                });
+                            });
+
+                            $(function () {
+                                $("#allProjects").DataTable({
+                                    "responsive": true, "lengthChange": false, "autoWidth": false,
+                                });
+                            });
+                        </script>
+
+
+                        <script type="text/javascript">
+                            google.load("visualization", "1", { packages: ["corechart"] });
+                            google.setOnLoadCallback(drawChart);
+                            function drawChart() {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/Home/PieChartMethod",
+                                    data: '{}',
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        var data = google.visualization.arrayToDataTable(result);
+
+                                        //Pie
+                                        var options = {
+                                            title: 'Company Ticket Distribution',
+                                            //is3D: true
+                                        };
+                                        var chart = new google.visualization.PieChart($("#chart1")[0]);
+                                        chart.draw(data, options);
+                                    },
+                                    failure: function (result) {
+                                        alert(result.d);
+                                    },
+                                    error: function (result) {
+                                        alert(result.d);
+                                    }
+                                });
                             }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--myTickets-->
-   
-    <div class="row row-cols-1 row-cols-xl-2">
-        <div class="col d-flex">
-            <div class="card radius-10 w-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h5 class="mb-1">Store Metrics</h5>
-                            <p class="mb-0 font-13 text-secondary">
-                                <i class='bx bxs-calendar'></i>in last 30
-                                days revenue
-                            </p>
-                        </div>
-                        <div class="font-22 ms-auto">
-                            <i class='bx bx-dots-horizontal-rounded'></i>
-                        </div>
-                    </div>
-                    <div class="row row-cols-1 row-cols-sm-3 mt-4">
-                        <div class="col">
-                            <div>
-                                <p class="mb-0 text-secondary">Revenue</p>
-                                <h4 class="my-1">$4805</h4>
-                                <p class="mb-0 font-13 text-success">
-                                    <i class='bx bxs-up-arrow align-middle'></i>$1458 Since last month
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div>
-                                <p class="mb-0 text-secondary">Total Customers</p>
-                                <h4 class="my-1">8.4K</h4>
-                                <p class="mb-0 font-13 text-success">
-                                    <i class='bx bxs-up-arrow align-middle'></i>12.3% Since last month
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div>
-                                <p class="mb-0 text-secondary">Store Visitors</p>
-                                <h4 class="my-1">59K</h4>
-                                <p class="mb-0 font-13 text-danger">
-                                    <i class='bx bxs-down-arrow align-middle'></i>2.4% Since last month
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="chart4"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col d-flex">
-            <div class="card radius-10 w-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h5 class="mb-1">Top Products</h5>
-                            <p class="mb-0 font-13 text-secondary">
-                                <i class='bx bxs-calendar'></i>in last 30
-                                days revenue
-                            </p>
-                        </div>
-                        <div class="font-22 ms-auto">
-                            <i class='bx bx-dots-horizontal-rounded'></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-list p-3 mb-3">
-                    <div class="row border mx-0 mb-3 py-2 radius-10 cursor-pointer">
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <div class="product-img">
-                                    <img src="assets/images/icons/chair.png" alt="" />
-                                </div>
-                                <div class="ms-2">
-                                    <h6 class="mb-1">Light Blue Chair</h6>
-                                    <p class="mb-0">$240.00</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm">
-                            <h6 class="mb-1">$2140.00</h6>
-                            <p class="mb-0">345 Sales</p>
-                        </div>
-                        <div class="col-sm">
-                            <div id="chart5"></div>
-                        </div>
-                    </div>
-                    <div class="row border mx-0 mb-3 py-2 radius-10 cursor-pointer">
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <div class="product-img">
-                                    <img src="assets/images/icons/user-interface.png" alt="" />
-                                </div>
-                                <div class="ms-2">
-                                    <h6 class="mb-1">Honor Mobile 7x</h6>
-                                    <p class="mb-0">$159.00</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm">
-                            <h6 class="mb-1">$3570.00</h6>
-                            <p class="mb-0">148 Sales</p>
-                        </div>
-                        <div class="col-sm">
-                            <div id="chart6"></div>
-                        </div>
-                    </div>
-                    <div class="row border mx-0 mb-3 py-2 radius-10 cursor-pointer">
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <div class="product-img">
-                                    <img src="assets/images/icons/watch.png" alt="" />
-                                </div>
-                                <div class="ms-2">
-                                    <h6 class="mb-1">Hand Watch</h6>
-                                    <p class="mb-0">$250.00</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm">
-                            <h6 class="mb-1">$3650.00</h6>
-                            <p class="mb-0">122 Sales</p>
-                        </div>
-                        <div class="col-sm">
-                            <div id="chart7"></div>
-                        </div>
-                    </div>
-                    <div class="row border mx-0 mb-3 py-2 radius-10 cursor-pointer">
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <div class="product-img">
-                                    <img src="assets/images/icons/idea.png" alt="" />
-                                </div>
-                                <div class="ms-2">
-                                    <h6 class="mb-1">Mini Laptop</h6>
-                                    <p class="mb-0">$260.00</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm">
-                            <h6 class="mb-1">$6320.00</h6>
-                            <p class="mb-0">452 Sales</p>
-                        </div>
-                        <div class="col-sm">
-                            <div id="chart8"></div>
-                        </div>
-                    </div>
-                    <div class="row border mx-0 mb-3 py-2 radius-10 cursor-pointer">
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <div class="product-img">
-                                    <img src="assets/images/icons/tshirt.png" alt="" />
-                                </div>
-                                <div class="ms-2">
-                                    <h6 class="mb-1">Slim-T-Shirt</h6>
-                                    <p class="mb-0">$112.00</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm">
-                            <h6 class="mb-1">$2360.00</h6>
-                            <p class="mb-0">572 Sales</p>
-                        </div>
-                        <div class="col-sm">
-                            <div id="chart9"></div>
-                        </div>
-                    </div>
-                    <div class="row border mx-0 mb-3 py-2 radius-10 cursor-pointer">
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <div class="product-img">
-                                    <img src="assets/images/icons/headphones.png" alt="" />
-                                </div>
-                                <div class="ms-2">
-                                    <h6 class="mb-1">Smart Headphones</h6>
-                                    <p class="mb-0">$360.00</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm">
-                            <h6 class="mb-1">$9840.00</h6>
-                            <p class="mb-0">275 Sales</p>
-                        </div>
-                        <div class="col-sm">
-                            <div id="chart10"></div>
-                        </div>
-                    </div>
-                    <div class="row border mx-0 py-2 radius-10 cursor-pointer">
-                        <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
-                                <div class="product-img">
-                                    <img src="assets/images/icons/shoes.png" alt="" />
-                                </div>
-                                <div class="ms-2">
-                                    <h6 class="mb-1">Green Sports Shoes</h6>
-                                    <p class="mb-0">$410.00</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm">
-                            <h6 class="mb-1">$3840.00</h6>
-                            <p class="mb-0">265 Sales</p>
-                        </div>
-                        <div class="col-sm">
-                            <div id="chart11"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Bootstrap JS -->
-    <script src="~/js/bootstrap.bundle.min.js"></script>
-    <!--plugins-->
-    <script src="~/js/jquery.min.js"></script>
-    <script src="~/plugins/simplebar/js/simplebar.min.js"></script>
-    <script src="~/plugins/metismenu/js/metisMenu.min.js"></script>
-    <script src="~/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
-    <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
-    <script src="~/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
-    <script src="~/js/table-datatable.js"></script>
-    <!--app JS-->
-    <script src="~/js/app.js"></script>
+                        </script>
+                        <script type="text/javascript">
+                            google.load("visualization", "1", { packages: ["corechart"] });
+                            google.setOnLoadCallback(drawChart);
+                            function drawChart() {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/Home/PieChartMethod",
+                                    data: '{}',
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        var data = google.visualization.arrayToDataTable(result);
 
-    <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    @section Scripts{
-        @*<script>
-                $(function () {
-                    $("#allTickets").DataTable({
-                        "responsive": true, "lengthChange": false, "autoWidth": false,
-                        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-                    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-                    $('#example2').DataTable({
-                        "paging": true,
-                        "lengthChange": false,
-                        "searching": false,
-                        "ordering": true,
-                        "info": true,
-                        "autoWidth": false,
-                        "responsive": true,
-                        //"columnDefs": [
-                        //    {
-                        //        "targets": [0, 1],
-                        //        "visible": false,
-                        //        "searchable": true,
-                        //    }
-                        //]
-                    });
-                });
+                                        //3D Pie
+                                        var options = {
+                                            title: 'Company Ticket Distribution',
+                                            is3D: true
+                                        };
+                                        var chart = new google.visualization.PieChart($("#chart3D")[0]);
+                                        chart.draw(data, options);
+                                    },
+                                    failure: function (rresult) {
+                                        alert(result.d);
+                                    },
+                                    error: function (result) {
+                                        alert(result.d);
+                                    }
+                                });
+                            }
+                        </script>
+                        <script type="text/javascript">
+                            google.load("visualization", "1", { packages: ["corechart"] });
+                            google.setOnLoadCallback(drawChart);
+                            function drawChart() {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/Home/PieChartMethod",
+                                    data: '{}',
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        var data = google.visualization.arrayToDataTable(result);
 
-            </script>*@
+                                        //Donut
+                                        var options = {
+                                            title: 'Company Ticket Distribution',
+                                            pieHole: 0.5
+                                        };
+                                        var chart = new google.visualization.PieChart($("#donut")[0]);
+                                        chart.draw(data, options);
+                                    },
+                                    failure: function (rresult) {
+                                        alert(result.d);
+                                    },
+                                    error: function (result) {
+                                        alert(result.d);
+                                    }
+                                });
+                            }
+                        </script>
 
-        @*<script>
-                $(function () {
-                    $("#myProjects").DataTable({
-                        "responsive": true, "lengthChange": false, "autoWidth": false,
-                        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-                    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-                    $('#example2').DataTable({
-                        "paging": true,
-                        "lengthChange": false,
-                        "searching": false,
-                        "ordering": true,
-                        "info": true,
-                        "autoWidth": false,
-                        "responsive": true,
-                        //"columnDefs": [
-                        //    {
-                        //        "targets": [0, 1],
-                        //        "visible": false,
-                        //        "searchable": true,
-                        //    }
-                        //]
-                    });
-                });
-
-            </script>*@
-
-<script>
-    $(function () {
-        $("#allTickets").DataTable({
-            "responsive": true, "lengthChange": false, "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#allTickets_wrapper .col-md-6:eq(0)');
-        $('#example2').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-            //"columnDefs": [
-            //    {
-            //        "targets": [0, 1],
-            //        "visible": false,
-            //        "searchable": true,
-            //    }
-            //]
-        });
-    });
-
-</script>
-        <script type="text/javascript">
-            google.load("visualization", "1", { packages: ["corechart"] });
-            google.setOnLoadCallback(drawChart);
-            function drawChart() {
-                $.ajax({
-                    type: "POST",
-                    url: "/Home/PieChartMethod",
-                    data: '{}',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (result) {
-                        var data = google.visualization.arrayToDataTable(result);
-
-                        //Pie
-                        var options = {
-                            title: 'Company Ticket Distribution',
-                            //is3D: true
-                        };
-                        var chart = new google.visualization.PieChart($("#chart1")[0]);
-                        chart.draw(data, options);
-                    },
-                    failure: function (result) {
-                        alert(result.d);
-                    },
-                    error: function (result) {
-                        alert(result.d);
                     }
-                });
-            }
-        </script>
-        <script type="text/javascript">
-            google.load("visualization", "1", { packages: ["corechart"] });
-            google.setOnLoadCallback(drawChart);
-            function drawChart() {
-                $.ajax({
-                    type: "POST",
-                    url: "/Home/PieChartMethod",
-                    data: '{}',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (result) {
-                        var data = google.visualization.arrayToDataTable(result);
-
-                        //3D Pie
-                        var options = {
-                            title: 'Company Ticket Distribution',
-                            is3D: true
-                        };
-                        var chart = new google.visualization.PieChart($("#chart3D")[0]);
-                        chart.draw(data, options);
-                    },
-                    failure: function (rresult) {
-                        alert(result.d);
-                    },
-                    error: function (result) {
-                        alert(result.d);
-                    }
-                });
-            }
-        </script>
-        <script type="text/javascript">
-            google.load("visualization", "1", { packages: ["corechart"] });
-            google.setOnLoadCallback(drawChart);
-            function drawChart() {
-                $.ajax({
-                    type: "POST",
-                    url: "/Home/PieChartMethod",
-                    data: '{}',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (result) {
-                        var data = google.visualization.arrayToDataTable(result);
-
-                        //Donut
-                        var options = {
-                            title: 'Company Ticket Distribution',
-                            pieHole: 0.5
-                        };
-                        var chart = new google.visualization.PieChart($("#donut")[0]);
-                        chart.draw(data, options);
-                    },
-                    failure: function (rresult) {
-                        alert(result.d);
-                    },
-                    error: function (result) {
-                        alert(result.d);
-                    }
-                });
-            }
-        </script>
-
-    }
 

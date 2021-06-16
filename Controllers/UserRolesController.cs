@@ -1,4 +1,5 @@
 ﻿using BugTracker.Data;
+using BugTracker.Extentions;
 using BugTracker.Models;
 using BugTracker.Models.ViewModels;
 using BugTracker.Models.ViewModels.Enums;
@@ -20,23 +21,27 @@ namespace BugTracker.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTRolesService _rolesService;
+        private readonly IBTCompanyInfoService _infoService;
 
         public UserRolesController(ApplicationDbContext context,
                                    UserManager<BTUser> userManager,
-                                   IBTRolesService rolesService)
+                                   IBTRolesService rolesService, IBTCompanyInfoService infoService)
         {
             _context = context;
             _userManager = userManager;
             _rolesService = rolesService;
+            _infoService = infoService;
         }
 
         [HttpGet]
         public async Task<IActionResult> ManageUserRoles()
         {
             List<ManageUsersRolesViewModel> model = new();
+            int companyId = User.Identity.GetCompanyId().Value;
 
             //TODO: Company Users
-            List<BTUser> users = _context.Users.ToList();
+            //List<BTUser> users = _context.Users.ToList();
+            List<BTUser> users = await _infoService.GetAllMembersAsync(companyId);
 
             foreach (var user in users)
             {

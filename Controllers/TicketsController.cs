@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using BugTracker.Extentions;
 using BugTracker.Models.ViewModels.Enums;
 using BugTracker.Models.ViewModels;
+using System.IO;
 
 namespace BugTracker.Controllers
 {
@@ -60,6 +61,8 @@ namespace BugTracker.Controllers
                 .Include(t => t.TicketPriority)
                 .Include(t => t.TicketStatus)
                 .Include(t => t.TicketType)
+                .Include(t => t.Attachments)
+                .Include(t => t.History)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {
@@ -92,6 +95,7 @@ namespace BugTracker.Controllers
 
             ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriority, "Id", "Name");
             ViewData["TicketTypeId"] = new SelectList(_context.TicketType, "Id", "Name");
+            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatus, "Id", "Name");
             return View();
         }
 
@@ -182,12 +186,12 @@ namespace BugTracker.Controllers
             {
                 return NotFound();
             }
-            ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
-            ViewData["OwnerUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.OwnerUserId);
+            ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "FullName", ticket.DeveloperUserId);
+            ViewData["OwnerUserId"] = new SelectList(_context.Users, "Id", "FullName", ticket.OwnerUserId);
             ViewData["ProjectId"] = new SelectList(_context.Project, "Id", "Name", ticket.ProjectId);
-            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriority, "Id", "Id", ticket.TicketPriorityId);
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatus, "Id", "Id", ticket.TicketStatusId);
-            ViewData["TicketTypeId"] = new SelectList(_context.TicketType, "Id", "Id", ticket.TicketTypeId);
+            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriority, "Id", "Name", ticket.TicketPriorityId);
+            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatus, "Id", "Name", ticket.TicketStatusId);
+            ViewData["TicketTypeId"] = new SelectList(_context.TicketType, "Id", "Name", ticket.TicketTypeId);
             return View(ticket);
         }
 
@@ -253,7 +257,7 @@ namespace BugTracker.Controllers
                             Message = $"New Ticket: {ticket?.Title}, was updated by {currentUser?.FullName}",
                             Created = DateTimeOffset.Now,
                             SenderId = currentUser?.Id,
-                            RecipientId = currentProjectManager?.Id
+                            RecipientId = ticket.DeveloperUserId
 
                         };
 
@@ -377,6 +381,19 @@ namespace BugTracker.Controllers
                                          
             return View(model);
         }
+
+        public IActionResult ShowFile(int id)
+        {
+            TicketAttachment ticketAttachment = _context.TicketAttachment.Find(id);
+            string fileName = ticketAttachment.FileName;
+            byte[] fileData = ticketAttachment.FileData;
+            string ext = Path.GetExtension(fileName).Replace(".", "");
+
+            Response.Headers.Add("Content-Disposition", $"inline; filename={fileName}");
+            return File(fileData, $"application/{ext}");
+        }
+
+
 
         [HttpPost]
         [AutoValidateAntiforgeryToken]

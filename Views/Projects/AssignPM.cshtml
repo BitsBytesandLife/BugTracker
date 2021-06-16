@@ -1,0 +1,33 @@
+﻿@model BugTracker.Models.ViewModels.AssignPMViewModel
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="AssignPM" asp-controller="Projects" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="@Model.Project.Id" />
+                    <input type="hidden" asp-for="@Model.Project.Name" />
+
+                    @*<input asp-for="@Model.Ticket.Id" hidden />
+
+                    <input asp-for="@Model.Ticket.ProjectId" hidden />*@
+                    <div class="row clearfix">
+                        <div class="col-md-6 col-sm-12">
+                            <label>Select Project Manager</label>
+                            <div class="form-group">
+                                <select class="form-control show-tick" asp-for="@Model.ProjectManagerId" asp-items="@Model.ProjectManagersSelectList">
+                                    <option>Select Project Manager</option>
+                                </select>
+                            </div>
+                            <div class="mt-4 form-group">
+                                <button type="submit" value="AssignPM" class="btn btn-primary">Submit</button>
+                                <button asp-action="Dashboard" asp-controller="Home" class="btn btn-primary">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

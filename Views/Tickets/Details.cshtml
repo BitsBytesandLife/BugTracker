@@ -5,6 +5,7 @@
 
 @inject UserManager<BTUser> userManager
 @inject IBTProjectService projectSerivce
+@inject IBTFileService BTFileService
 @{
     BTUser currentUser = await userManager.GetUserAsync(User);
     BTUser currentPM = await projectSerivce.GetProjectManagerAsync(Model.ProjectId);
@@ -17,6 +18,7 @@
         <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="container">
                 <div class="card">
+                    <!--Project Details Overview-->
                     <div class="card-body shadow-lg">
                         <h3>Ticket: @Html.DisplayFor(model => model.Title) </h3>
                         <p>Project: @Html.DisplayFor(model => model.Project.Name)</p>
@@ -53,7 +55,7 @@
                 </div>
             </div>
             <br />
-
+            <!-- More Project Details-->
             <div class="container">
                 <div class="card">
                     <div class="card-body shadow-lg">
@@ -69,36 +71,67 @@
             <br />
             <div class="container">
                 <div class="card">
-                    <div class="card-body shadow-lg">
-                        <h3>Ticket Attacment:</h3>
-                        <form asp-action="Create" asp-controller="TicketAttachments" enctype="multipart/form-data" method="post">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <input type="hidden" asp-for="@Model.Id" name="TicketId">
+                    <div class="row">
+                        <div class="col">
+                           <!--Ticket Attactment-->
+                            <div class="card-body shadow-lg">
+                                <h3>Create Ticket Attacment:</h3>
+                                <form asp-action="Create" asp-controller="TicketAttachments" enctype="multipart/form-data" method="post">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="hidden" asp-for="@Model.Id" name="TicketId">
 
 
-                            <div class="media-body ml-3">
-                                <label class="form-label d-block mb-2">Add Attachment</label>
-                                <label>
-                                    Description
-                                    <input asp-for="@Model.Attachments.FirstOrDefault().Description" type="text" class="form-control" />
-                                </label><br />
-                                <label class="btn btn-outline-primary btn-sm">
-                                    <input asp-for="@Model.Attachments.FirstOrDefault().FormFile" type="file" />
-                                </label>
-                                <button type="submit" class="btn btn-outline-secondary btn-sm md-btn-flat">Submit</button>
+                                    <div class="media-body ml-3">
+                                        <label class="form-label d-block mb-2">Add Attachment</label>
+                                        <label>
+                                            Description
+                                            <input asp-for="@Model.Attachments.FirstOrDefault().Description" type="text" class="form-control" />
+                                        </label><br />
+                                        <label class="btn btn-outline-primary btn-sm">
+                                            <input asp-for="@Model.Attachments.FirstOrDefault().FormFile" type="file" />
+                                        </label>
+                                        <button type="submit" class="btn btn-outline-secondary btn-sm md-btn-flat">Submit</button>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
+                        </div>
+                        <div class="col">
+                            <div class="row clearfix">
+                                @foreach (TicketAttachment item in Model.Attachments)
+                                {
+                                    <div class="col-sm-2">
+                                        <div class="card">
+                                            <div class="file">
+                                                <a asp-action="ShowFile" asp-controller="Tickets" asp-route-Id="@item.Id">
+                                                    <div class="hover">
+                                                        <button type="button" class="btn btn-icon btn-danger">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="icon">
+                                                        <img src="@BTFileService.GetFileIcon(item.FileName)" style="height:60px;width:60px" />
+                                                    </div>
+                                                    <div class="file-name">
+                                                        <p class="m-b-5 text-muted">@System.IO.Path.GetFileNameWithoutExtension(item.FileName)</p>
+                                                        <small>Size: @BTFileService.FormatFileSize(item.FileData.Length) <span class="date text-muted">@item.Created.ToString("MMM dd, yyyy")</span></small>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
 
-
-
-
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="container">
                 <div class="card shadow-lg">
+                    <!-- Ticket Comments -->
                     <div class="card-body">
                         <h3>Ticket Comments</h3>
                         <div>
@@ -124,9 +157,9 @@
                                         </div>
                                     </div>
                                     @if (User.IsInRole(Roles.Admin.ToString()) ||
-                                     (currentPM?.Id == currentUser.Id) ||
-                                     (currentUser.Id == Model.DeveloperUser?.Id) ||
-                                     (currentUser.Id == Model.OwnerUserId))
+                                  (currentPM?.Id == currentUser.Id) ||
+                                  (currentUser.Id == Model.DeveloperUser?.Id) ||
+                                  (currentUser.Id == Model.OwnerUserId))
                                     {
                                         <div class="form-group">
 
@@ -147,6 +180,7 @@
                     </div>
                 </div>
             </div>
+            <!--History-->
             <div class="container m-1">
                 <div class="card">
                     <div class="card-body shadow-lg">
@@ -157,13 +191,13 @@
                             @foreach (var history in Model.History)
                             {
 
-                                <p>@history.Created </p>
+                                <p>@history.Created.ToString("d") </p>
                                 <p>@history.Property</p>
                                 <p>By: @history.User.FullName</p>
                                 <p>@history.Description </p>
                                 <p>Previous: @history.OldValue </p>
                                 <p>Curreent: @history.NewValue</p>
-
+                                <hr />
                             }
                         }
                         else
@@ -178,11 +212,8 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-6">
-            <div>
-
-            </div>
-
+        <div class="col">
+           
         </div>
 
         <div class="col">

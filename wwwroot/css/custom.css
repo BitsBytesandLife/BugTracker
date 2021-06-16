@@ -1,4 +1,28 @@
-﻿bt-ui-scroll {
-    overflow-y: auto;
-    height: 150px;
+﻿.line-clamp {
+    display: block;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    position: relative;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 !important;
+    -webkit-line-clamp: 1;
+    height: calc(1em * 1.2 * 1);
 }
+
+.popover {
+    border: 5px black solid;
+}
+
+
+.table td.abbreviation {
+    max-width: 30px;
+}
+
+
+    .table td.abbreviation p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }

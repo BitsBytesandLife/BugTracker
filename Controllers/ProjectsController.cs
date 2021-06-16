@@ -49,6 +49,10 @@ namespace BugTracker.Controllers
                 .Include(p => p.Members)
                 .Include(p => p.Company)
                 .Include(p => p.ProjectPriority)
+                .Include(p => p.Tickets)
+                    .ThenInclude(t => t.OwnerUser)
+                .Include(p => p.Tickets)
+                    .ThenInclude(t => t.DeveloperUser)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (project == null)
             {
@@ -59,6 +63,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Create
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Create()
         {
             BTUser currentUser = await _userManager.GetUserAsync(User);
@@ -107,6 +112,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Edit/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -127,6 +133,7 @@ namespace BugTracker.Controllers
         // POST: Projects/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CompanyId,Name,Description,StartDate,EndDate,ProjectPriorityId,ImageFileName,ImageFileData,ImageFileContentType,Archived")] Project project)
@@ -162,6 +169,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Delete/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -182,6 +190,7 @@ namespace BugTracker.Controllers
         }
 
         // POST: Projects/Delete/5
+        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -193,7 +202,7 @@ namespace BugTracker.Controllers
         }
 
 
-        //[Authorize (Roles = "Admin, ProjertManager")]
+        [Authorize (Roles = "Admin, ProjectManager")]
         [HttpGet]
         public async Task<IActionResult> AssignUsers(int id)
         {
@@ -217,6 +226,7 @@ namespace BugTracker.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignUsers(ProjectMembersViewModel model)
@@ -247,6 +257,32 @@ namespace BugTracker.Controllers
             }
             return View(model);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> AssignProjectManager(int id)
+        {
+            ProjectMembersViewModel model = new();
+
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            Project project = (await _projectService.GetAllProjectsByCompany(companyId))
+                                    .FirstOrDefault(p => p.Id == id);
+
+            model.Project = project;
+            List<BTUser> projectManager = await _infoService.GetMembersInRoleAsync(Roles.ProjectManager.ToString(), companyId);
+          
+
+            //List<BTUser> users = await _projectService.UsersNotOnProjectAsync(id, companyId);
+            //List<BTUser> users = projectManager.ToList();
+            //List<BTUser> members = project.Members.ToList();
+           // List<string> members = project.Members.Select(m => m.Id).ToList();
+            model.Users = new SelectList(projectManager, "Id", "FullName");
+
+            return View(model);
+        }
+
+
+
 
 
         [HttpGet]
@@ -306,6 +342,7 @@ namespace BugTracker.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> AllProjects()
         {
             int companyId = User.Identity.GetCompanyId().Value;
@@ -323,6 +360,48 @@ namespace BugTracker.Controllers
 
             return View(myProjects);
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> AssignPM(int id)
+        {
+            AssignPMViewModel model = new();
+
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            Project project = (await _projectService.GetAllProjectsByCompany(companyId))
+                                                        .FirstOrDefault(p => p.Id == id);
+
+            model.Project = project;
+
+            List<BTUser> projectManager = await _infoService.GetMembersInRoleAsync(Roles.ProjectManager.ToString(), companyId);
+
+            model.ProjectManagersSelectList = new SelectList(projectManager, "Id", "FullName");
+
+            return View(model);
+
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignPM(AssignPMViewModel model)
+        {
+
+            if (ModelState.IsValid)
+            {
+               await _projectService.AddProjectManagerAsync(model.ProjectManagerId , model.Project.Id);
+
+                return RedirectToAction("Details", "Projects", new { id = model.Project.Id });
+            }
+            else 
+            { 
+                //Send an error maybe SweetAlert 
+            }
+            return View();
+        }
+
+
 
 
         private bool ProjectExists(int id)

@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Areas\Identity\Pages\Account\Manage\RegisterByInvite.cshtml" />
+    <None Include="Areas\Identity\Pages\Account\RegisterByInvite.cshtml" />
   </ItemGroup>
 
 </Project>

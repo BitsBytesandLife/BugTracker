@@ -333,6 +333,3 @@ ASALocalRun/
 # Local History for Visual Studio
 .localhistory/
 
-# Leaving out appSettings.json
-appSettings.json
-appSettings.Development.json

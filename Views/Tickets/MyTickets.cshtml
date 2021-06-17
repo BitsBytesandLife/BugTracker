@@ -14,7 +14,7 @@
 </p>
 <h3>Developer Tickets</h3>
 <div class="container bg-white">
-    <table id="allTickets" class="table table-striped table-bordered ">
+    <table id="devTickets" class="table table-striped table-bordered ">
         <thead>
             <tr>
                 <th>
@@ -26,12 +26,12 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Updated)
                 </th>
-                <th>
+                @*<th>
                     @Html.DisplayNameFor(model => model.Archived)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.ArchivedDate)
-                </th>
+                </th>*@
                 <th>
                     @Html.DisplayNameFor(model => model.Description)
                 </th>
@@ -69,12 +69,12 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Updated)
                     </td>
-                    <td>
+                    @*<td>
                         @Html.DisplayFor(modelItem => item.Archived)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.ArchivedDate)
-                    </td>
+                    </td>*@
                     <td>
                         @Html.DisplayFor(modelItem => item.Description)
                     </td>
@@ -220,10 +220,10 @@
 @section Scripts{
     <script>
         $(function () {
-            $("#allTickets").DataTable({
+            $("#devTickets").DataTable({
                 "responsive": true, "lengthChange": false, "autoWidth": false,
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#allTickets_wrapper .col-md-6:eq(0)');
+            }).buttons().container().appendTo('#devTickets_wrapper .col-md-6:eq(0)');
         });
 
     </script>

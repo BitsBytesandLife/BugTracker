@@ -100,12 +100,16 @@
                             </li>
                         }
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="MyProjects">MyProjects</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Companies" asp-action="Index">Companies</a>
-                        </li>
+                        @if (User.IsInRole("ProjectManager") || User.IsInRole("Developer") || User.IsInRole("Submitter"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="MyProjects">MyProjects</a>
+                            </li>
+                        }
+
+                        @*<li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Companies" asp-action="Index">Companies</a>
+        </li>*@
                         @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
                         {
                             <li class="nav-item">
@@ -113,9 +117,16 @@
                             </li>
                         }
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Tickets" asp-action="MyTickets">MyTickets</a>
-                        </li>
+
+                        @if (User.IsInRole("Developer") || User.IsInRole("Submitter"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Tickets" asp-action="MyTickets">MyTickets</a>
+                            </li>
+                        }
+
+
+
                     </ul>
                 </li>
 

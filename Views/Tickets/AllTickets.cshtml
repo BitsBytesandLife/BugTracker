@@ -1,7 +1,12 @@
 ﻿@model IEnumerable<BugTracker.Models.Ticket>
+@using BugTracker.Services.Interfaces
+@using Microsoft.AspNetCore.Identity
+@inject IBTProjectService _projectService
+@inject UserManager<BTUser> BTUserManager
 
 @{
     ViewData["Title"] = "Index";
+    BTUser currentUser = await BTUserManager.GetUserAsync(User);
 }
 <link href="~/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
 <div class="container bg-white">
@@ -93,9 +98,12 @@
                         @Html.DisplayFor(modelItem => item.DeveloperUser.FullName)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        @if (User.IsInRole("Admin") || (User.IsInRole("ProjectManager") && (await _projectService.GetProjectManagerAsync(item.Id) == currentUser)))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        }
                     </td>
                 </tr>
             }
@@ -104,29 +112,29 @@
 </div>
 <br />
 <br />
-    
-    <!-- Bootstrap JS -->
-    <script src="~/js/bootstrap.bundle.min.js"></script>
-    <!--plugins-->
-    <script src="~/js/jquery.min.js"></script>
-    <script src="~/plugins/simplebar/js/simplebar.min.js"></script>
-    <script src="~/plugins/metismenu/js/metisMenu.min.js"></script>
-    <script src="~/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
-    <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
-    <script src="~/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
-    <script src="~/js/table-datatable.js"></script>
-    <!--app JS-->
-    <script src="assets/js/app.js"></script>
 
-    <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
-    @section Scripts{
-        <script>
-            $(function () {
-                $("#allTickets").DataTable({
-                    "responsive": true, "lengthChange": false, "autoWidth": false,
-                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-                }).buttons().container().appendTo('#allTickets_wrapper .col-md-6:eq(0)');
-            });
+<!-- Bootstrap JS -->
+<script src="~/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="~/js/jquery.min.js"></script>
+<script src="~/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="~/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="~/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
+<script src="~/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+<script src="~/js/table-datatable.js"></script>
+<!--app JS-->
+<script src="assets/js/app.js"></script>
 
-        </script>
-    }
+<script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
+@section Scripts{
+    <script>
+        $(function () {
+            $("#allTickets").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#allTickets_wrapper .col-md-6:eq(0)');
+        });
+
+    </script>
+}

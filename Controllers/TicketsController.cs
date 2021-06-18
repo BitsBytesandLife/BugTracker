@@ -13,6 +13,7 @@ using BugTracker.Extentions;
 using BugTracker.Models.ViewModels.Enums;
 using BugTracker.Models.ViewModels;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BugTracker.Controllers
 {
@@ -95,7 +96,7 @@ namespace BugTracker.Controllers
 
             ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriority, "Id", "Name");
             ViewData["TicketTypeId"] = new SelectList(_context.TicketType, "Id", "Name");
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatus, "Id", "Name");
+            //ViewData["TicketStatusId"] = new SelectList(_context.TicketStatus, "Id", "Name");
             return View();
         }
 
@@ -172,7 +173,8 @@ namespace BugTracker.Controllers
             //return View(ticket);
             return View();
         }
-
+      
+       
         // GET: Tickets/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -224,6 +226,12 @@ namespace BugTracker.Controllers
                 try
                 {
                     ticket.Updated = DateTimeOffset.Now;
+
+                    if (ticket.Archived == true)
+                    {
+                        ticket.ArchivedDate = DateTimeOffset.Now;
+                        ticket.TicketStatusId = 1;
+                    }
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
 
@@ -263,6 +271,8 @@ namespace BugTracker.Controllers
 
                         await _notificationService.SaveNotificationAsync(notification);
                     }
+
+                  
 
                 }
                 catch (DbUpdateConcurrencyException)

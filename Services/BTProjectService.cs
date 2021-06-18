@@ -246,6 +246,8 @@ namespace BugTracker.Services
                                             .Include(u => u.Projects)
                                                 .ThenInclude(p => p.Tickets)
                                             .Include(u => u.Projects)
+                                                .ThenInclude(p => p.ProjectPriority)
+                                            .Include(u => u.Projects)
                                                 .ThenInclude(t => t.Tickets)
                                                     .ThenInclude(t => t.DeveloperUser)
                                             .Include(u => u.Projects)

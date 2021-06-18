@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using IssueTracker.Extensions;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using static IssueTracker.Extensions.MaxFileSizeAttribute;
 
 namespace BugTracker.Models
 {
@@ -27,8 +29,11 @@ namespace BugTracker.Models
         [DisplayName("Team Member")]
         public string UserId { get; set; }
 
+        [Display(Name = "Select Image")]
         [NotMapped]
         [DataType(DataType.Upload)]
+        [MaxFileSize(2 * 1024 * 1024)]
+        [AllowedExtensions(new string[] { ".jpg",".png",".doc",".docx", ".xls",".xlsx",".pdf"})]
         public IFormFile FormFile { get; set; }
 
         [DisplayName("File Name")]

@@ -76,23 +76,29 @@
                            <!--Ticket Attactment-->
                             <div class="card-body shadow-lg">
                                 <h3>Create Ticket Attacment:</h3>
-                                <form asp-action="Create" asp-controller="TicketAttachments" enctype="multipart/form-data" method="post">
-                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <input type="hidden" asp-for="@Model.Id" name="TicketId">
+                                @if (User.IsInRole(Roles.Admin.ToString()) ||
+                         (currentPM?.Id == currentUser.Id) ||
+                         (currentUser.Id == Model.DeveloperUser?.Id) ||
+                         (currentUser.Id == Model.OwnerUserId))
+                                {
+                                    <form asp-action="Create" asp-controller="TicketAttachments" enctype="multipart/form-data" method="post">
+                                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                        <input type="hidden" asp-for="@Model.Id" name="TicketId">
 
 
-                                    <div class="media-body ml-3">
-                                        <label class="form-label d-block mb-2">Add Attachment</label>
-                                        <label>
-                                            Description
-                                            <input asp-for="@Model.Attachments.FirstOrDefault().Description" type="text" class="form-control" />
-                                        </label><br />
-                                        <label class="btn btn-outline-primary btn-sm">
-                                            <input asp-for="@Model.Attachments.FirstOrDefault().FormFile" type="file" />
-                                        </label>
-                                        <button type="submit" class="btn btn-outline-secondary btn-sm md-btn-flat">Submit</button>
-                                    </div>
-                                </form>
+                                        <div class="media-body ml-3">
+                                            <label class="form-label d-block mb-2">Add Attachment</label>
+                                            <label>
+                                                Description
+                                                <input asp-for="@Model.Attachments.FirstOrDefault().Description" type="text" class="form-control" />
+                                            </label><br />
+                                            <label class="btn btn-outline-primary btn-sm">
+                                                <input asp-for="@Model.Attachments.FirstOrDefault().FormFile" type="file" />
+                                            </label>
+                                            <button type="submit" class="btn btn-outline-secondary btn-sm md-btn-flat">Submit</button>
+                                        </div>
+                                    </form>
+                                }
                             </div>
                         </div>
                         <div class="col">
@@ -102,10 +108,10 @@
                                     <div class="col-sm-2">
                                         <div class="card">
                                             <div class="file">
-                                                <a asp-action="ShowFile" asp-controller="Tickets" asp-route-Id="@item.Id">
+                                                <a href="javascript:void(0);">
                                                     <div class="hover">
                                                         <button type="button" class="btn btn-icon btn-danger">
-                                                            <i class="fa fa-trash"></i>
+                                                            <i class="lni lni-trash"></i>
                                                         </button>
                                                     </div>
                                                     <div class="icon">
@@ -190,7 +196,6 @@
                             {
                                 @foreach (var history in Model.History.OrderByDescending(t => t.Created))
                                 {
-
                                     <div class="col py-2">
                                         <div class="card radius-15">
                                             <div class="card-body">
@@ -198,8 +203,16 @@
                                                 <h4 class="card-title text-muted">@history.Property</h4>
                                                 <h5 class="card-text">By: @history.User.FullName</h5>
                                                 <p class="card-text">@history.Description</p>
-                                                <p class="card-text">Previous: @history.OldValue</p>
-                                                <p class="card-text">Current: @history.NewValue</p>
+                                                @if (history.Description == "New Ticket Created")
+                                                {
+
+                                                }
+                                                else
+                                                {
+                                                    <p class="card-text">Previous: @history.OldValue</p>
+                                                    <p class="card-text">Current: @history.NewValue</p>
+                                                }
+
                                             </div>
                                         </div>
                                     </div>

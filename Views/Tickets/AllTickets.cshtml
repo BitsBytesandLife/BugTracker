@@ -131,12 +131,14 @@
 <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
 @section Scripts{
     <script>
-        $(function () {
-            $("#allTickets").DataTable({
-                "responsive": true, "lengthChange": false, "autoWidth": false,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#allTickets_wrapper .col-md-6:eq(0)');
-        });
+        $("#allTickets").DataTable();
+
+        //$(function () {
+        //    $("#allTickets").DataTable({
+        //        "responsive": true, "lengthChange": false, "autoWidth": false,
+        //        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        //    }).buttons().container().appendTo('#allTickets_wrapper .col-md-6:eq(0)');
+        //});
 
     </script>
 }

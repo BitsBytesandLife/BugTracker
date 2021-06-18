@@ -98,8 +98,10 @@
                         @Html.DisplayFor(modelItem => item.DeveloperUser.FullName)
                     </td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        @if (User.IsInRole("Admin") || (User.IsInRole("ProjectManager") && (await _projectService.GetProjectManagerAsync(item.Id) == currentUser)))
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                        @if (User.IsInRole("Admin") || 
+                            (User.IsInRole("ProjectManager") 
+                            && (await _projectService.GetProjectManagerAsync(item.Project.Id) == currentUser)))
                         {
                             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                             <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>

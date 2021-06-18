@@ -11,38 +11,50 @@
 <link href="~/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
 <div style="margin-left: 280px;margin-right: 30px; padding: 30px; overflow:auto">
 
-    
-  
-    
-    
-    
-     
+
+
+
+
+    <div class="card radius-10 overflow-hidden shadow-lg">
+        <div class="card-body">
+            <p>Total Users: @Model.CurrentCompany.Members.Count()</p>
+            <hr />
+            <p>Total Tickets: @Model.Tickets.Count()</p>
+            <hr />
+            <p>Total Developers:@Model.Tickets.GroupBy(t => t.DeveloperUserId).Count()</p>
+            <hr />
+            <p>Total Submitter:@Model.Tickets.GroupBy(t => t.OwnerUserId).Count()</p>
+            <hr />
+            <p>Unassinged Tickets:@Model.Tickets.GroupBy(t => t.DeveloperUserId == null).Count()</p>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col">
             <section class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        
-                            <!-- DONUT CHART -->
-                            <div class="card card-danger">
-                                <div class="card-header">
-                                    <h3 class="card-title">Company Ticket Distribution</h3>
-                                </div>
-                                <div class="card-body">
-                                    <canvas id="donutChart">
-                                    </canvas>
-                                </div>
+
+                        <!-- DONUT CHART -->
+                        <div class="card card-danger">
+                            <div class="card-header">
+                                <h3 class="card-title">Company Ticket Distribution</h3>
                             </div>
-                        
+                            <div class="card-body">
+                                <canvas id="donutChart">
+                                </canvas>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </section>
 
-            <div class="col">
+            <div class="row">
                 <section class="content">
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div>
                                 <!-- DONUT CHART -->
                                 <div class="card card-danger">
                                     <div class="card-header">
@@ -50,7 +62,6 @@
                                     </div>
                                     <div class="card-body">
                                         <canvas id="userChart">
-                                            
                                         </canvas>
                                     </div>
                                 </div>
@@ -58,59 +69,7 @@
                         </div>
                     </div>
                 </section>
-
-                
-
-                <div class="card radius-10 overflow-hidden shadow-lg">
-                    <div class="card-body">
-                        <p>Total Users: @Model.CurrentCompany.Members.Count()</p>
-                        <hr />
-                        <p>Total Tickets: @Model.Tickets.Count()</p>
-                        <hr />
-                        <p>Total Developers:@Model.Tickets.GroupBy(t => t.DeveloperUserId).Count()</p>
-                        <hr />
-                        <p>Total Submitter:@Model.Tickets.GroupBy(t => t.OwnerUserId).Count()</p>
-                        <hr />
-                        <p>Unassinged Tickets:@Model.Tickets.GroupBy(t => t.DeveloperUserId == null).Count()</p>
-                    </div>
-                </div>
             </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <section class="content">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <!-- DONUT CHART -->
-                                    <div class="card card-danger">
-                                        <div class="card-header">
-                                            <h3 class="card-title">Company Ticket Distribution</h3>
-                                        </div>
-                                        <div class="card-body">
-                                            <canvas id="donutChart">
-                                            </canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-                <div class="col-md-6">
-                    <div class="card card-danger">
-                        <div class="card-header">
-                            <h3 class="card-title">Members by Projects</h3>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="userChart">
-                            </canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
         </div>
     </div>
     <!--<div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
@@ -193,11 +152,11 @@
                                         Title
                                     </th>
                                     @*<th>
-                                        Created
-                                    </th>
-                                    <th>
-                                        Updated
-                                    </th>*@
+                                            Created
+                                        </th>
+                                        <th>
+                                            Updated
+                                        </th>*@
                                     @*<th>
                                             @Html.DisplayNameFor(model => model.Archived)
                                         </th>
@@ -205,11 +164,11 @@
                                             @Html.DisplayNameFor(model => model.ArchivedDate)
                                         </th>*@
                                     @*<th>
-                                        Description
-                                    </th>*@
+                                            Description
+                                        </th>*@
                                     @*<th>
-                                        Project
-                                    </th>*@
+                                            Project
+                                        </th>*@
                                     <th>
                                         Priority
                                     </th>
@@ -236,17 +195,17 @@
                                             @Html.DisplayFor(modelItem => item.Title)
                                         </td>
                                         @*<td>
-                                            @Html.DisplayFor(modelItem => item.Created)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Updated)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Description)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Project.Name)
-                                        </td>*@
+                                                @Html.DisplayFor(modelItem => item.Created)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Updated)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Description)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Project.Name)
+                                            </td>*@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.TicketPriority.Name)
                                         </td>

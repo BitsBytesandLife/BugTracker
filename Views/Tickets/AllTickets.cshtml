@@ -9,13 +9,13 @@
     BTUser currentUser = await BTUserManager.GetUserAsync(User);
 }
 <link href="~/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
-<div class="container bg-white">
+<div class="bg-white">
     <h1>All Tickets By Company</h1>
 
     <p>
         <a asp-action="Create">Create New</a>
     </p>
-    <table id="allTickets" class="table table-striped table-bordered">
+    <table id="allTix" class="table table-striped table-bordered">
         <thead>
             <tr>
                 <th>
@@ -24,12 +24,12 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Created)
                 </th>
-                <th>
+                @*<th>
                     @Html.DisplayNameFor(model => model.Updated)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Archived)
-                </th>
+                </th>*@
                 <th>
                     @Html.DisplayNameFor(model => model.ArchivedDate)
                 </th>
@@ -70,12 +70,12 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Updated)
                     </td>
-                    <td>
+                    @*<td>
                         @Html.DisplayFor(modelItem => item.Archived)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.ArchivedDate)
-                    </td>
+                    </td>*@
                     <td>
                         @Html.DisplayFor(modelItem => item.Description)
                     </td>
@@ -104,7 +104,7 @@
                             && (await _projectService.GetProjectManagerAsync(item.Project.Id) == currentUser)))
                         {
                             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            @*<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
                         }
                     </td>
                 </tr>
@@ -131,7 +131,7 @@
 <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
 @section Scripts{
     <script>
-        $("#allTickets").DataTable();
+       $("#allTix").DataTable();
 
         //$(function () {
         //    $("#allTickets").DataTable({

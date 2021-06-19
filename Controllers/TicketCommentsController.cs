@@ -67,6 +67,7 @@ namespace BugTracker.Controllers
         {
             if (ModelState.IsValid)
             {
+
                 string userId = _userManager.GetUserId(User);
                 ticketComment.UserId = userId;
                 ticketComment.Created = DateTimeOffset.Now;
@@ -74,6 +75,9 @@ namespace BugTracker.Controllers
 
                 _context.Add(ticketComment);
                 await _context.SaveChangesAsync();
+
+
+
                 return RedirectToAction("Details","Tickets", new { id = ticketComment.TicketId } );
             }
             ViewData["TicketId"] = new SelectList(_context.Ticket, "Id", "Title", ticketComment.TicketId);

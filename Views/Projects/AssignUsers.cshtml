@@ -11,64 +11,64 @@
                 </div>
             </div>
             <div class="col">
-                <p>
+                @*<p>
                     Name :
                     <span>@Model.Project.Name</span>
-                </p>
+                </p>*@
                 <div class="row">
-                    <div class="col">
-                        <form asp-action="AssignUsers" asp-controller="Projects" method="post">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <input type="hidden" asp-for="@Model.Project.Id">
-                            <input type="hidden" asp-for="@Model.Project.Name">
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Users" class="control-label">Assign team members for Project: @Model.Project.Name</label>
-                                    <select asp-for="@Model.SelectedUsers" class="form-control" asp-items="@Model.Users" multiple="multiple"></select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-lg-offset-2 col-lg-10">
-                                    <input type="submit" class="btn btn-success" value="Assign Users" />
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="col">
-                        <p>
-                            Remove Users:
-                            <span>@Model.Project.Name</span>
-                        </p>
 
-                        <form asp-action="RemoveUsers" asp-controller="Projects" method="post">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <input type="hidden" asp-for="@Model.Project.Id">
-                            <input type="hidden" asp-for="@Model.Project.Name">
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label asp-for="@Model.Users" class="control-label">Remove team members on Project: @Model.Project.Name</label>
-                                    <select asp-for="@Model.SelectedUsers" class="form-control" asp-items="@Model.Users" multiple="multiple"></select>
-                                </div>
-                            </div>
+                    <form asp-action="AssignUsers" asp-controller="Projects" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="@Model.Project.Id">
+                        <input type="hidden" asp-for="@Model.Project.Name">
+                        <div class="col-12">
                             <div class="form-group">
-                                <div class="col-lg-offset-2 col-lg-10">
-                                    <input type="submit" class="btn btn-danger" value="Remove Users" />
-                                    @*<a class="btn btn-danger" asp-action="RemoveUsers" asp-controller="Projects" asp-route-id="@Model.Project.Id">Remove Users </a>*@
-                                </div>
+                                <label asp-for="@Model.Users" class="control-label">Assign team members for Project: @Model.Project.Name</label>
+                                <select asp-for="@Model.SelectedUsers" class="form-control" asp-items="@Model.Users" multiple="multiple"></select>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-offset-2 col-lg-10">
+                                <input type="submit" class="btn btn-success m-1" value="Assign Users" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="row">
+                    @*<p>
+                        Remove Users:
+                        <span>@Model.Project.Name</span>
+                    </p>*@
+
+                    <form asp-action="RemoveUsers" asp-controller="Projects" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="@Model.Project.Id">
+                        <input type="hidden" asp-for="@Model.Project.Name">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="@Model.Users" class="control-label">Remove team members on Project: @Model.Project.Name</label>
+                                <select asp-for="@Model.SelectedUsers" class="form-control" asp-items="@Model.Users" multiple="multiple"></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-offset-2 col-lg-10">
+                                <input type="submit" class="btn btn-danger m-1" value="Remove Users" />
+                                @*<a class="btn btn-danger" asp-action="RemoveUsers" asp-controller="Projects" asp-route-id="@Model.Project.Id">Remove Users </a>*@
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-
         </div>
 
-
-
-
-
     </div>
-    <!--End Hover Rows-->
+
+
+
+
+
+</div>
+<!--End Hover Rows-->
 </div>
 <div>
     @Html.ActionLink("Back to List", "Index")

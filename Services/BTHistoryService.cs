@@ -16,16 +16,24 @@ namespace BugTracker.Services
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTCompanyInfoService _companyInfoService;
+        private readonly IBTNotificationService _notificationService;
 
-        public BTHistoryService(ApplicationDbContext context, UserManager<BTUser> userManager,IBTCompanyInfoService companyInfoService)
+        public BTHistoryService(ApplicationDbContext context, UserManager<BTUser> userManager, IBTCompanyInfoService companyInfoService, IBTNotificationService notificationService)
         {
             _context = context;
             _userManager = userManager;
             _companyInfoService = companyInfoService;
+            _notificationService = notificationService;
         }
 
         public async Task AddHistoryAsync(Ticket oldTicket, Ticket newTicket, string userId)
         {
+
+
+            Notification notification = new();
+           // int companyId = User.Identity.GetCompanyId().Value;
+           // BTUser currentUser = await _userManager.GetUserAsync(User);
+            
             if (oldTicket == null && newTicket != null)
             {
                 TicketHistory history = new()
@@ -106,7 +114,17 @@ namespace BugTracker.Services
                         Description = $"New Ticket Priority: {newTicket.TicketPriority.Name}"
                     };
 
-                    
+                    //notification = new()
+                    //{
+                    //    TicketId = newTicket.Id,
+                    //    Title = "New Dev Ticket",
+                    //    Message = $"You have have a new ticket: {newTicket?.Title}, was Created by {currentUser?.FullName}",
+                    //    Created = DateTimeOffset.Now,
+                    //    SenderId = currentUser?.Id,
+                    //    RecipientId = newTicket.DeveloperUserId
+
+                    //};
+
                     await _context.TicketHistory.AddAsync(history);
                 }
                 //Check Status

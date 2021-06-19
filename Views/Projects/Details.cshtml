@@ -71,7 +71,7 @@
                         <dd class="col-sm-10">
                             @Html.DisplayFor(model => model.EndDate)
                         </dd>
-                        <dt class="col-sm-2">
+                        @*<dt class="col-sm-2">
                             @Html.DisplayNameFor(model => model.ImageFileName)
                         </dt>
                         <dd class="col-sm-10">
@@ -82,13 +82,13 @@
                         </dt>
                         <dd class="col-sm-10">
                             @Html.DisplayFor(model => model.ImageFileData)
-                        </dd>
-                        <dt class="col-sm-2">
+                        </dd>*@
+                        @*<dt class="col-sm-2">
                             @Html.DisplayNameFor(model => model.ImageFileContentType)
                         </dt>
                         <dd class="col-sm-10">
                             @Html.DisplayFor(model => model.ImageFileContentType)
-                        </dd>
+                        </dd>*@
                         <dt class="col-sm-2">
                             @Html.DisplayNameFor(model => model.Archived)
                         </dt>
@@ -105,7 +105,7 @@
                             @Html.DisplayNameFor(model => model.ProjectPriority)
                         </dt>
                         <dd class="col-sm-10">
-                            @Html.DisplayFor(model => model.ProjectPriority.Id)
+                            @Html.DisplayFor(model => model.ProjectPriority.Name)
                         </dd>
                     </dl>
                 </div>

@@ -79,6 +79,7 @@ namespace BugTracker.Controllers
                 //ToDo: SweetAlet 
                 //Only PM or Admin can make Project
                 return RedirectToAction("Index");
+                
             }
             
             return View();
@@ -104,7 +105,8 @@ namespace BugTracker.Controllers
                
                 _context.Add(project);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                //return RedirectToAction(nameof(Index));
+                return RedirectToAction("Dashboard", "Home");
             }
             //ViewData["CompanyId"] = new SelectList(_context.Company, "Id", "Name", project.CompanyId);
             ViewData["ProjectPriorityId"] = new SelectList(_context.Set<ProjectPriority>(), "Id", "Name", project.ProjectPriorityId);
@@ -169,7 +171,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Delete/5
-        [Authorize(Roles = "Admin, ProjectManager")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

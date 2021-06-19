@@ -43,7 +43,7 @@
                                 <i>No Developer assiged</i>
                                 @if (User.IsInRole(Roles.Admin.ToString()) || (currentPM?.Id == currentUser.Id))
                                 {
-                                    <a class="btn btn-primary" asp-action="AssignTicket" asp-controller="Tickets" asp-route-id="@Model.Id">Add Dev</a>
+                                    <a class="btn btn-primary" asp-action="AssignTicket" asp-controller="Tickets" asp-route-ticketId="@Model.Id">Add Dev</a>
                                 }
                             }
                         </p>

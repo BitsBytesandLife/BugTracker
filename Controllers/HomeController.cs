@@ -24,14 +24,15 @@ namespace BugTracker.Controllers
         private readonly IBTTicketService _ticketService;
         private readonly IBTRolesService _rolesService;
         private readonly UserManager<BTUser> _userManager;
+        private readonly IBTNotificationService _notificationService;
 
-        public HomeController(ILogger<HomeController> logger, 
-                              ApplicationDbContext context, 
-                              IBTProjectService projectService, 
+        public HomeController(ILogger<HomeController> logger,
+                              ApplicationDbContext context,
+                              IBTProjectService projectService,
                               IBTCompanyInfoService infoService,
                               IBTTicketService ticketService,
                               IBTRolesService rolesService,
-                              UserManager<BTUser> userManager)
+                              UserManager<BTUser> userManager, IBTNotificationService notificationService)
         {
             _logger = logger;
             _context = context;
@@ -40,6 +41,7 @@ namespace BugTracker.Controllers
             _ticketService = ticketService;
             _rolesService = rolesService;
             _userManager = userManager;
+            _notificationService = notificationService;
         }
 
         public IActionResult Index()
@@ -63,6 +65,7 @@ namespace BugTracker.Controllers
                 Projects = await _projectService.ListUserProjectsAsync(currentUser.Id),
                 Tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId),
                 Users = await _infoService.GetAllMembersAsync(companyId),
+                Notifications = await _notificationService.GetReceivedNotificationsAsync(currentUser.Id),
                 CurrentCompany = await _infoService.GetCompanyInfoByIdAsync(companyId)
             };
 

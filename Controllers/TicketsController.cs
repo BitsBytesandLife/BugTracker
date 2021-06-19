@@ -413,6 +413,8 @@ namespace BugTracker.Controllers
             {
                 
                 int companyId = User.Identity.GetCompanyId().Value;
+                Notification notification = new();
+
                 BTUser currentUser = await _userManager.GetUserAsync(User);
                 BTUser currentDev = (await _companyInfoService.GetAllMembersAsync(companyId))
                                         .FirstOrDefault(m => m.Id == viewModel.DeveloperId);
@@ -434,6 +436,18 @@ namespace BugTracker.Controllers
                                                .Include(t => t.Project)
                                                .Include(t => t.DeveloperUser)
                                                .AsNoTracking().FirstOrDefaultAsync(t => t.Id == viewModel.Ticket.Id);
+                notification = new()
+                {
+                    TicketId = newTicket.Id,
+                    Title = "New Dev Ticket",
+                    Message = $"You have have a new ticket: {newTicket?.Title}, was Created by {currentUser?.FullName}",
+                    Created = DateTimeOffset.Now,
+                    SenderId = currentUser?.Id,
+                    RecipientId = newTicket.DeveloperUserId
+
+                };
+
+                await _notificationService.SaveNotificationAsync(notification);
 
                 await _historyService.AddHistoryAsync(oldTicket, newTicket, currentUser.Id); 
             }

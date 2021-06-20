@@ -74,7 +74,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Tickets/Create
-        public async Task<IActionResult>  Create()
+        public async Task<IActionResult> Create()
         {
             //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id");
             //ViewData["OwnerUserId"] = new SelectList(_context.Users, "Id", "Id");
@@ -89,7 +89,7 @@ namespace BugTracker.Controllers
             {
                 ViewData["ProjectId"] = new SelectList(await _projectService.GetAllProjectsByCompany(companyId), "Id", "Name");
             }
-            else 
+            else
             {
                 ViewData["ProjectId"] = new SelectList(await _projectService.ListUserProjectsAsync(btUser.Id), "Id", "Name");
             }
@@ -118,7 +118,7 @@ namespace BugTracker.Controllers
                 ticket.OwnerUserId = userId;
 
                 ticket.TicketStatusId = (await _ticketService.LookupTicketStatusIdAsync("New")).Value;
-                 
+
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
 
@@ -137,9 +137,9 @@ namespace BugTracker.Controllers
                 #region Notification
                 BTUser projectManager = await _projectService.GetProjectManagerAsync(ticket.ProjectId);
                 int companyId = User.Identity.GetCompanyId().Value;
-                
 
-               
+
+
                 Notification notification = new()
                 {
                     TicketId = ticket.Id,
@@ -159,10 +159,10 @@ namespace BugTracker.Controllers
                 {
                     await _notificationService.AdminsNotificationAsync(notification, companyId);
                 }
-               
+
                 #endregion
 
-                return RedirectToAction("Details","Projects",new {  id =ticket.ProjectId});
+                return RedirectToAction("Details", "Projects", new { id = ticket.ProjectId });
             }
             //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
             //ViewData["OwnerUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.OwnerUserId);
@@ -173,8 +173,8 @@ namespace BugTracker.Controllers
             //return View(ticket);
             return View();
         }
-      
-       
+
+
         // GET: Tickets/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -235,7 +235,7 @@ namespace BugTracker.Controllers
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
 
-                   
+
                     notification = new()
                     {
                         TicketId = ticket.Id,
@@ -246,10 +246,10 @@ namespace BugTracker.Controllers
                         RecipientId = currentProjectManager?.Id
 
                     };
-                    if (currentProjectManager!= null)
+                    if (currentProjectManager != null)
                     {
                         await _notificationService.SaveNotificationAsync(notification);
-                        
+
                     }
                     else
                     {
@@ -261,7 +261,7 @@ namespace BugTracker.Controllers
                         notification = new()
                         {
                             TicketId = ticket.Id,
-                            Title = "New Ticket",
+                            Title = "Modified Ticket",
                             Message = $"New Ticket: {ticket?.Title}, was updated by {currentUser?.FullName}",
                             Created = DateTimeOffset.Now,
                             SenderId = currentUser?.Id,
@@ -272,7 +272,7 @@ namespace BugTracker.Controllers
                         await _notificationService.SaveNotificationAsync(notification);
                     }
 
-                  
+
 
                 }
                 catch (DbUpdateConcurrencyException)
@@ -297,7 +297,7 @@ namespace BugTracker.Controllers
 
                 await _historyService.AddHistoryAsync(oldTicket, newTicket, currentUser.Id);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Tickets", new { id = ticket.Id });
             }
             ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
             ViewData["OwnerUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.OwnerUserId);
@@ -366,9 +366,9 @@ namespace BugTracker.Controllers
 
             List<Ticket> developerTickets = await _ticketService.GetAllTicketsByRoleAsync(Roles.Developer.ToString(), currentUser);
             List<Ticket> submitterTickets = await _ticketService.GetAllTicketsByRoleAsync(Roles.Submitter.ToString(), currentUser);
-            
+
             tickets = developerTickets.Concat(submitterTickets).ToList();
-            
+
             return View(tickets);
         }
         [HttpGet]
@@ -385,10 +385,10 @@ namespace BugTracker.Controllers
             model.Ticket = (await _ticketService
                             .GetAllTicketsByCompanyAsync(companyId))
                             .FirstOrDefault(t => t.Id == ticketId);
-            
+
             model.Developers = new SelectList(await _projectService
                                    .DevelopersOnProjectAsync(model.Ticket.ProjectId), "Id", "FullName");
-                                         
+
             return View(model);
         }
 
@@ -411,7 +411,7 @@ namespace BugTracker.Controllers
         {
             if (!string.IsNullOrEmpty(viewModel.DeveloperId))
             {
-                
+
                 int companyId = User.Identity.GetCompanyId().Value;
                 Notification notification = new();
 
@@ -449,7 +449,7 @@ namespace BugTracker.Controllers
 
                 await _notificationService.SaveNotificationAsync(notification);
 
-                await _historyService.AddHistoryAsync(oldTicket, newTicket, currentUser.Id); 
+                await _historyService.AddHistoryAsync(oldTicket, newTicket, currentUser.Id);
             }
             return RedirectToAction("Details", "Tickets", new { id = viewModel.Ticket.Id });
         }

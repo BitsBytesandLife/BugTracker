@@ -15,9 +15,45 @@
     @if (User.IsInRole("Developer") || User.IsInRole("ProjectManager"))
     {
         <h3>Notification</h3>
-        <p>@Model.Notifications.Count()</p>
-    }
+        <h4><i>Latest Notifications</i></h4>
+        <div style="overflow-y: auto; height: 100px;">
+            <div class="card radius-10 overflow-hidden shadow-lg">
+                <div class="card-body">
 
+                    @if (@Model.Notifications.Count() >= 0)
+                    {
+
+                        foreach (var notification in Model.Notifications.OrderByDescending(c => c.Created).Take(5))
+                        {
+
+                            if (notification.Viewed == false)
+                            {
+
+                                <div class="media m-1">
+                                    <div class="media-body">
+                                        <h5 class="mt-0">@notification.Title <i>Posted on @notification.Created.ToString("d")</i></h5>
+
+                                        <p> @Html.Raw(@notification.Message)</p>
+                                    </div>
+                                </div>
+
+                                @*<p>@notification.Title </p>
+                                <p>@notification.Message </p>
+                                <p>@notification.Created.ToString("d")</p>*@
+                                <hr />
+                            }
+                            else
+                            {
+                                <p>You have not notifications.</p>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <br />
+
+    }
     <!--Project Overview and Chart-->
     <div class="row">
         <!--Project Overview-->
@@ -67,14 +103,14 @@
                                             Name
                                         </th>
                                         @*<th>
-                                            Start Date
-                                        </th>
-                                        <th>
-                                            End Date
-                                        </th>
-                                        <th>
-                                            Project
-                                        </th>*@
+                                                Start Date
+                                            </th>
+                                            <th>
+                                                End Date
+                                            </th>
+                                            <th>
+                                                Project
+                                            </th>*@
                                         <th>
 
                                         </th>
@@ -88,14 +124,14 @@
                                                 @Html.DisplayFor(modelItem => item.Name)
                                             </td>
                                             @*<td>
-                                                @Html.DisplayFor(modelItem => item.StartDate)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.EndDate)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.ProjectPriority.Name)
-                                            </td>*@
+                                                    @Html.DisplayFor(modelItem => item.StartDate)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.EndDate)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.ProjectPriority.Name)
+                                                </td>*@
                                             <td>
                                                 <a asp-controller="Projects" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                                                 <a asp-controller="Projects" asp-action="Details" asp-route-id="@item.Id">Details</a> @*|*@
@@ -142,23 +178,23 @@
                                                 Title
                                             </th>
                                             @*<th>
-                                            Created
-                                        </th>
-                                        <th>
-                                            Updated
-                                        </th>*@
+                                                    Created
+                                                </th>
+                                                <th>
+                                                    Updated
+                                                </th>*@
                                             @*<th>
-                                            @Html.DisplayNameFor(model => model.Archived)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.ArchivedDate)
-                                        </th>*@
+                                                    @Html.DisplayNameFor(model => model.Archived)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.ArchivedDate)
+                                                </th>*@
                                             @*<th>
-                                            Description
-                                        </th>*@
+                                                    Description
+                                                </th>*@
                                             @*<th>
-                                            Project
-                                        </th>*@
+                                                    Project
+                                                </th>*@
                                             <th>
                                                 Priority
                                             </th>
@@ -169,11 +205,11 @@
                                                 Status
                                             </th>
                                             @*<th>
-                                            @Html.DisplayNameFor(model => model.OwnerUser)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.DeveloperUser)
-                                        </th>*@
+                                                    @Html.DisplayNameFor(model => model.OwnerUser)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.DeveloperUser)
+                                                </th>*@
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -185,17 +221,17 @@
                                                     @Html.DisplayFor(modelItem => item.Title)
                                                 </td>
                                                 @*<td>
-                                                @Html.DisplayFor(modelItem => item.Created)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Updated)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Description)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Project.Name)
-                                            </td>*@
+                                                        @Html.DisplayFor(modelItem => item.Created)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Updated)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Description)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Project.Name)
+                                                    </td>*@
                                                 <td>
                                                     @Html.DisplayFor(modelItem => item.TicketPriority.Name)
                                                 </td>
@@ -226,7 +262,7 @@
     </div>
 
 </div>
-      
+
 <!-- Bootstrap JS -->
 <script src="~/js/bootstrap.bundle.min.js"></script>
 <!--plugins-->

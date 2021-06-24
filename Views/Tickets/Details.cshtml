@@ -73,13 +73,13 @@
                 <div class="card">
                     <div class="row">
                         <div class="col">
-                           <!--Ticket Attactment-->
+                            <!--Ticket Attactment-->
                             <div class="card-body shadow-lg">
                                 <h3>Create Ticket Attacment:</h3>
                                 @if (User.IsInRole(Roles.Admin.ToString()) ||
-                         (currentPM?.Id == currentUser.Id) ||
-                         (currentUser.Id == Model.DeveloperUser?.Id) ||
-                         (currentUser.Id == Model.OwnerUserId))
+                        (currentPM?.Id == currentUser.Id) ||
+                        (currentUser.Id == Model.DeveloperUser?.Id) ||
+                        (currentUser.Id == Model.OwnerUserId))
                                 {
                                     <form asp-action="Create" asp-controller="TicketAttachments" enctype="multipart/form-data" method="post">
                                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -101,34 +101,34 @@
                                 }
                             </div>
                         </div>
-                        <div class="col">
-                            <div class="row clearfix">
-                                @foreach (TicketAttachment item in Model.Attachments)
-                                {
-                                    <div class="col-sm-2">
-                                        <div class="card">
-                                            <div class="file">
-                                                <a href="javascript:void(0);">
-                                                    <div class="hover">
-                                                        <button type="button" class="btn btn-icon btn-danger">
-                                                            <i class="lni lni-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                    <div class="icon">
-                                                        <img src="@BTFileService.GetFileIcon(item.FileName)" style="height:60px;width:60px" />
-                                                    </div>
-                                                    <div class="file-name">
-                                                        <p class="m-b-5 text-muted">@System.IO.Path.GetFileNameWithoutExtension(item.FileName)</p>
-                                                        <small>Size: @BTFileService.FormatFileSize(item.FileData.Length) <span class="date text-muted">@item.Created.ToString("MMM dd, yyyy")</span></small>
-                                                    </div>
-                                                </a>
-                                            </div>
+
+                        <div class="row clearfix m-1">
+                            @foreach (TicketAttachment item in Model.Attachments)
+                            {
+                                <div class="col-sm-2">
+                                    <div class="card">
+                                        <div class="file">
+                                            <a href="javascript:void(0);">
+                                                <div class="hover">
+                                                    <button type="button" class="btn btn-icon btn-danger">
+                                                        <i class="lni lni-trash"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="icon">
+                                                    <img src="@BTFileService.GetFileIcon(item.FileName)" style="height:60px;width:60px" />
+                                                </div>
+                                                <div class="file-name">
+                                                    <p class="m-b-5 text-muted">@System.IO.Path.GetFileNameWithoutExtension(item.FileName)</p>
+                                                    <small>Size: @BTFileService.FormatFileSize(item.FileData.Length) <span class="date text-muted">@item.Created.ToString("MMM dd, yyyy")</span></small>
+                                                </div>
+                                            </a>
                                         </div>
                                     </div>
-                                }
-                            </div>
-
+                                </div>
+                            }
                         </div>
+
+
                     </div>
 
                 </div>
@@ -163,9 +163,9 @@
                                         </div>
                                     </div>
                                     @if (User.IsInRole(Roles.Admin.ToString()) ||
-                                  (currentPM?.Id == currentUser.Id) ||
-                                  (currentUser.Id == Model.DeveloperUser?.Id) ||
-                                  (currentUser.Id == Model.OwnerUserId))
+                                 (currentPM?.Id == currentUser.Id) ||
+                                 (currentUser.Id == Model.DeveloperUser?.Id) ||
+                                 (currentUser.Id == Model.OwnerUserId))
                                     {
                                         <div class="form-group">
 
@@ -223,7 +223,7 @@
                                 <p>This Ticket as no history.</p>
                             }
                         </div>
-                        
+
 
                     </div>
                 </div>
@@ -232,7 +232,7 @@
     </div>
     <div class="row">
         <div class="col">
-           
+
         </div>
 
         <div class="col">

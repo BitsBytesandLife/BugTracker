@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using BugTracker.Data;
 using BugTracker.Models;
 using Microsoft.AspNetCore.Identity;
+using BugTracker.Services.Interfaces;
+using System.Diagnostics;
 
 namespace BugTracker.Controllers
 {
@@ -15,12 +17,13 @@ namespace BugTracker.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BTUser> _userManager;
+        private readonly IBTNotificationService _notificationService;
 
-
-        public TicketCommentsController(ApplicationDbContext context, UserManager<BTUser> userManager = null)
+        public TicketCommentsController(ApplicationDbContext context, UserManager<BTUser> userManager = null, IBTNotificationService notificationService = null)
         {
             _context = context;
             _userManager = userManager;
+            _notificationService = notificationService;
         }
 
         // GET: TicketComments
@@ -76,6 +79,37 @@ namespace BugTracker.Controllers
                 _context.Add(ticketComment);
                 await _context.SaveChangesAsync();
 
+                Ticket ticket = await _context.Ticket.FirstOrDefaultAsync(t => t.Id == ticketComment.TicketId);
+
+                try
+                {
+
+                    if (ticket.DeveloperUserId != null)
+                    {
+                        BTUser currentUser = await _userManager.GetUserAsync(User);
+                        Notification notification = new();
+
+                        notification = new()
+                        {
+                            TicketId = ticketComment.Ticket.Id,
+                            Title = "Create Comment",
+                            Message = $"New Comment: { ticketComment.Ticket?.Title}, was updated by {currentUser?.FullName}",
+                            Created = DateTimeOffset.Now,
+                            SenderId = currentUser?.Id,
+                            RecipientId = ticketComment.Ticket.DeveloperUserId
+                        };
+
+
+                        await _notificationService.SaveNotificationAsync(notification);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+
+                    Debug.WriteLine($" ERROR  - Notification was not sent  --> {ex.Message}");
+                }
+
 
 
                 return RedirectToAction("Details","Tickets", new { id = ticketComment.TicketId } );
@@ -121,6 +155,31 @@ namespace BugTracker.Controllers
                 {
                     _context.Update(ticketComment);
                     await _context.SaveChangesAsync();
+
+                    Ticket ticket = await _context.Ticket.FirstOrDefaultAsync(t => t.Id == ticketComment.TicketId);
+
+                    if (ticket.DeveloperUserId != null)
+                    {
+                        BTUser currentUser = await _userManager.GetUserAsync(User);
+                        Notification notification = new();
+
+                        notification = new()
+                        {
+                            TicketId = ticketComment.Ticket.Id,
+                            Title = "Updated Comment",
+                            Message = $"Updated Comment: { ticketComment.Ticket?.Title}, was updated by {currentUser?.FullName}",
+                            Created = DateTimeOffset.Now,
+                            SenderId = currentUser?.Id,
+                            RecipientId = ticketComment.Ticket.DeveloperUserId
+
+                        };
+
+                        await _notificationService.SaveNotificationAsync(notification);
+                    }
+
+
+
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {

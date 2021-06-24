@@ -11,9 +11,14 @@
     <h1>All Projects</h1>
     <link href="~/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
 
-    <p>
-        <a class="btn btn-primary" asp-action="Create">Create New</a>
-    </p>
+
+    @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+    {
+        <p>
+            <a class="btn btn-primary" asp-action="Create">Create New</a>
+        </p>
+    }
+
     <div class="card">
         <div class="card-body">
             <div>

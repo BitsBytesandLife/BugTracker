@@ -48,8 +48,15 @@
                             }
                         </p>
                         <div>
-                            <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-                            <a asp-action="Index">Back to List</a>
+                            @if (User.IsInRole(Roles.Admin.ToString()) || (currentPM?.Id == currentUser.Id) ||
+                                  (currentUser.Id == Model.DeveloperUser?.Id) ||
+                                  (currentUser.Id == Model.OwnerUserId))
+
+                                {
+                                    <a asp-action="Edit" asp-route-id="@Model.Id">Edit |</a>
+                                }
+
+                            <a asp-controller="Home" asp-action="Dashboard">Back to Dashbord</a>
                         </div>
                     </div>
                 </div>
@@ -77,9 +84,9 @@
                             <div class="card-body shadow-lg">
                                 <h3>Create Ticket Attacment:</h3>
                                 @if (User.IsInRole(Roles.Admin.ToString()) ||
-                        (currentPM?.Id == currentUser.Id) ||
-                        (currentUser.Id == Model.DeveloperUser?.Id) ||
-                        (currentUser.Id == Model.OwnerUserId))
+(currentPM?.Id == currentUser.Id) ||
+(currentUser.Id == Model.DeveloperUser?.Id) ||
+(currentUser.Id == Model.OwnerUserId))
                                 {
                                     <form asp-action="Create" asp-controller="TicketAttachments" enctype="multipart/form-data" method="post">
                                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -138,13 +145,26 @@
             <div class="container">
                 <div class="card shadow-lg">
                     <!-- Ticket Comments -->
+
+
                     <div class="card-body">
                         <h3>Ticket Comments</h3>
                         <div>
                             <form asp-action="Create" asp-controller="TicketComments" method="post">
                                 <input type="hidden" name="TicketId" value="@Model.Id" />
                                 <textarea name="Comment" rows="3" class="form-control"></textarea>
-                                <button type="submit" class="btn btn-primary btn-block btn-sm">Submit</button>
+
+                                @if (User.IsInRole(Roles.Admin.ToString()) ||
+                                 (currentPM?.Id == currentUser.Id) ||
+                                 (currentUser.Id == Model.DeveloperUser?.Id) ||
+                                 (currentUser.Id == Model.OwnerUserId))
+                                {
+                                    <button type="submit" class="btn btn-primary btn-block btn-sm">Submit</button>
+
+                                }
+
+
+
                             </form>
                         </div>
                         <div style="overflow-y: auto; height: 150px;">
@@ -163,9 +183,9 @@
                                         </div>
                                     </div>
                                     @if (User.IsInRole(Roles.Admin.ToString()) ||
-                                 (currentPM?.Id == currentUser.Id) ||
-                                 (currentUser.Id == Model.DeveloperUser?.Id) ||
-                                 (currentUser.Id == Model.OwnerUserId))
+                       (currentPM?.Id == currentUser.Id) ||
+                       (currentUser.Id == Model.DeveloperUser?.Id) ||
+                       (currentUser.Id == Model.OwnerUserId))
                                     {
                                         <div class="form-group">
 
@@ -184,6 +204,10 @@
                         </div>
 
                     </div>
+
+
+
+
                 </div>
             </div>
             <!--History-->

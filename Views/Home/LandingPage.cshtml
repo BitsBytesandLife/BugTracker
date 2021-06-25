@@ -1,4 +1,5 @@
 ﻿@{ 
+    //Layout = "/Views/Shared/_LoginLayout.cshtml";
     Layout = null;
 }
 <!DOCTYPE html>
@@ -20,7 +21,7 @@
     <title>Bug Tracker</title>
 </head>
 
-<body>
+<body class="bg-login">
     <!-- wrapper -->
     <div class="wrapper">
         @*<nav class="navbar navbar-expand-lg navbar-light bg-white rounded fixed-top rounded-0 shadow-sm">
@@ -56,15 +57,20 @@
                         <div class="col-xl-5">
                             <div class="card-body p-4">
                                 @*<h1 class="display-1"><span class="text-warning">5</span><span class="text-danger">0</span><span class="text-primary">0</span></h1>
-                                <h2 class="font-weight-bold display-4">Sorry, unexpected error</h2>*@
+        <h2 class="font-weight-bold display-4">Sorry, unexpected error</h2>*@
                                 <p>
-                                    Bug Tracker!!!
-                                    <br>Win Againg the battle Againt Broken Code
+                                    Bugs Be Gone!!!
+                                    <br>Win the Battle Against Broken Code!!!
                                 </p>
+                                <p>
+                                    Bugs Be Gone, <br />
+                                    This sofware developed using ASP.Net MVC,BootStrap 5, and Entity Framework Core.
+                                </p>
+                              
                                 <div class="mt-5">
                                     <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Login">Try It Out!</a>
                                     @*<a href="javascript:;" class="btn btn-lg btn-primary px-md-5 radius-30">Go Home</a>
-                                    <a href="javascript:;" class="btn btn-lg btn-outline-dark ms-3 px-md-5 radius-30">Back</a>*@
+            <a href="javascript:;" class="btn btn-lg btn-outline-dark ms-3 px-md-5 radius-30">Back</a>*@
                                 </div>
                             </div>
                         </div>

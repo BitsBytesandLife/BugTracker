@@ -35,4 +35,8 @@
     <None Include="Areas\Identity\Pages\Account\RegisterByInvite.cshtml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\NewFolder\" />
+  </ItemGroup>
+
 </Project>

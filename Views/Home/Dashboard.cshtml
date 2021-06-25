@@ -68,7 +68,7 @@
                     <hr />
                     <p>Total Submitter:@Model.Tickets.GroupBy(t => t.OwnerUserId).Count()</p>
                     <hr />
-                    <p>Unassinged Tickets:@Model.Tickets.GroupBy(t => t.DeveloperUserId == null).Count()</p>
+                    <p>Unassigned Tickets:@Model.Tickets.GroupBy(t => t.DeveloperUserId == null).Count()</p>
                 </div>
             </div>
         </div>

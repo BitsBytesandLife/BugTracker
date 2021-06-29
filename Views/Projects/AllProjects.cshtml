@@ -38,7 +38,7 @@
                             <th>
                                 @Html.DisplayNameFor(model => model.EndDate)
                             </th>
-                            <th>
+                            @*<th>
                                 @Html.DisplayNameFor(model => model.ImageFileName)
                             </th>
                             <th>
@@ -46,7 +46,7 @@
                             </th>
                             <th>
                                 @Html.DisplayNameFor(model => model.ImageFileContentType)
-                            </th>
+                            </th>*@
                             <th>
                                 @Html.DisplayNameFor(model => model.Archived)
                             </th>
@@ -75,7 +75,7 @@
                                 <td>
                                     @Html.DisplayFor(modelItem => item.EndDate)
                                 </td>
-                                <td>
+                                @*<td>
                                     @Html.DisplayFor(modelItem => item.ImageFileName)
                                 </td>
                                 <td>
@@ -83,7 +83,7 @@
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.ImageFileContentType)
-                                </td>
+                                </td>*@
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Archived)
                                 </td>
@@ -98,13 +98,13 @@
                                     {
                                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                                         <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                        @*<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
                                     }
                                     else
                                     {
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="disabled">Edit</a>
                                         <a asp-action="Details" asp-route-id="@item.Id" class="disabled">Details</a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="disabled">Delete</a>
+                                        @*<a asp-action="Delete" asp-route-id="@item.Id" class="disabled">Delete</a>*@
                                     }
 
                                 </td>

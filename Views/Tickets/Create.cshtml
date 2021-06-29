@@ -1,16 +1,15 @@
 ﻿@model BugTracker.Models.Ticket
 
 @{
-    ViewData["Title"] = "Create";
+//ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>Create Ticket</h1>
 
-<h4>Ticket</h4>
 <div class="card border-top border-0 border-4 border-primary">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col">
                 <form asp-action="Create">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-group">
@@ -18,11 +17,11 @@
                         <input asp-for="Title" class="form-control" />
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
+                    @*<div class="form-group">
                         <label asp-for="Description" class="control-label"></label>
                         <input asp-for="Description" class="form-control" />
                         <span asp-validation-for="Description" class="text-danger"></span>
-                    </div>
+                    </div>*@
                     <div class="form-group">
                         <label asp-for="ProjectId" class="control-label"></label>
                         <select asp-for="ProjectId" class="form-control" asp-items="ViewBag.ProjectId">
@@ -59,6 +58,17 @@
                         <input type="submit" value="Create" class="btn btn-primary" />
                     </div>
                 </form>
+            </div>
+            <div class="col">
+                <div class="col">
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <textarea class="form-control" asp-for="Description" rows="11"></textarea>
+                        @*<label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>*@
+                    </div>
+                </div>
             </div>
         </div>
 

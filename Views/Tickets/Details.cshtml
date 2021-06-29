@@ -49,12 +49,12 @@
                         </p>
                         <div>
                             @if (User.IsInRole(Roles.Admin.ToString()) || (currentPM?.Id == currentUser.Id) ||
-                                  (currentUser.Id == Model.DeveloperUser?.Id) ||
-                                  (currentUser.Id == Model.OwnerUserId))
+                                 (currentUser.Id == Model.DeveloperUser?.Id) ||
+                                 (currentUser.Id == Model.OwnerUserId))
 
-                                {
-                                    <a asp-action="Edit" asp-route-id="@Model.Id">Edit |</a>
-                                }
+                            {
+                                <a asp-action="Edit" asp-route-id="@Model.Id">Edit |</a>
+                            }
 
                             <a asp-controller="Home" asp-action="Dashboard">Back to Dashbord</a>
                         </div>
@@ -152,9 +152,9 @@
                                 <textarea name="Comment" rows="3" class="form-control"></textarea>
 
                                 @if (User.IsInRole(Roles.Admin.ToString()) ||
-                                 (currentPM?.Id == currentUser.Id) ||
-                                 (currentUser.Id == Model.DeveloperUser?.Id) ||
-                                 (currentUser.Id == Model.OwnerUserId))
+                                (currentPM?.Id == currentUser.Id) ||
+                                (currentUser.Id == Model.DeveloperUser?.Id) ||
+                                (currentUser.Id == Model.OwnerUserId))
                                 {
                                     <button type="submit" class="btn btn-primary btn-block btn-sm">Submit</button>
 
@@ -180,13 +180,13 @@
                                         </div>
                                     </div>
                                     @if (User.IsInRole(Roles.Admin.ToString()) ||
-                       (currentPM?.Id == currentUser.Id) ||
-                       (currentUser.Id == Model.DeveloperUser?.Id) ||
-                       (currentUser.Id == Model.OwnerUserId))
+                      (currentPM?.Id == currentUser.Id) ||
+                      (currentUser.Id == Model.DeveloperUser?.Id) ||
+                      (currentUser.Id == Model.OwnerUserId))
                                     {
                                         <div class="form-group">
 
-                                            <input type="submit" value="Save" class="btn btn-primary" disabled />
+                                            @*<input type="submit" value="Save" class="btn btn-primary" />*@
                                         </div>
                                     }
                                     else

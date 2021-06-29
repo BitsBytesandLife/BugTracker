@@ -6,24 +6,22 @@
 @inject IBTRolesService roleServive
 @inject IBTNotificationService notificationService
 
-
 @{
     BTUser currentUser = await userManager.GetUserAsync(User);
     var notifications = await notificationService.GetReceivedNotificationsAsync(currentUser.Id);
 }
-
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]Bug Tracker</title>
+    <title>@ViewData["Title"]Buggy</title>
     @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="~/css/site.css" />*@
     <!--favicon-->
-    <link rel="icon" href="~/images/favicon-32x32.png" type="image/png" />
-
+    <!--<link rel="icon" href="~/images/favicon-32x32.png" type="image/png" /> -->
+    <link rel="icon" href="~/images/buggy_logos-01.png" type="image/png" />
     <!--plugins-->
     <link href="~/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
     <link href="~/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
@@ -48,12 +46,13 @@
     <div class="wrapper">
         <!--sidebar wrapper -->
         <div class="sidebar-wrapper" data-simplebar="true">
-            <div class="sidebar-header">
+            <div class="sidebar-header m-6">
+                @*<div>
+                    <img src="~/images/buggy_logos-01.png" class="img-fluid" >
+                 
+                </div>*@
                 <div>
-                    <img src="~/images/logo-icon.png" class="logo-icon" alt="logo icon">
-                </div>
-                <div>
-                    <h4 class="logo-text">Syndron</h4>
+                    @*<h4 class="logo-text">Buggy</h4>*@
                 </div>
                 @*<div class="toggle-icon ms-auto">
                     <i class='bx bx-arrow-to-left'></i>
@@ -61,6 +60,9 @@
             </div>
             <!--navigation-->
             <ul class="metismenu" id="menu">
+                <li>
+                    <img src="~/images/buggy_logos-01.png" class="img-fluid">
+                </li>
                 <li>
 
                     @*<a href="javascript:;" class="has-arrow ">
@@ -97,24 +99,24 @@
                         @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="AllProjects">AllProjects</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="AllProjects">All Projects</a>
                             </li>
                         }
 
                         @if (User.IsInRole("ProjectManager") || User.IsInRole("Developer") || User.IsInRole("Submitter"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="MyProjects">MyProjects</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="MyProjects">My Projects</a>
                             </li>
                         }
 
                         @*<li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Companies" asp-action="Index">Companies</a>
                             </li>*@
-                        @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                        @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager") || User.IsInRole("Developer") || User.IsInRole("Submitter"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Tickets" asp-action="AllTickets">AllTickets</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Tickets" asp-action="AllTickets">All Tickets</a>
                             </li>
                         }
 
@@ -122,7 +124,7 @@
                         @if (User.IsInRole("Developer") || User.IsInRole("Submitter"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Tickets" asp-action="MyTickets">MyTickets</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Tickets" asp-action="MyTickets">My Tickets</a>
                             </li>
                         }
                     </ul>

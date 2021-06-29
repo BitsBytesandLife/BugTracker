@@ -9,6 +9,13 @@
 @inject IBTTicketService TicketService
 @inject IBTNotificationService NotificationService
 @inject UserManager<BTUser> UserManager
+
+@{
+    BTUser currentUser = await UserManager.GetUserAsync(User);
+    //BTUser currentPM = await ProjectService.GetProjectManagerAsync(Model.);
+}
+
+
 <link href="~/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
 <div style="margin-left: 280px;margin-right: 30px; padding: 30px; overflow:auto">
 
@@ -52,27 +59,70 @@
             </div>
         </div>
         <br />
-
     }
-    <!--Project Overview and Chart-->
-    <div class="row">
-        <!--Project Overview-->
+
+    <!-- Overview Chart -->
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-3 row-cols-xl-3">
         <div class="col">
-            <div class="card radius-10 overflow-hidden shadow-lg">
+            <div class="card bg-primary text-white">
                 <div class="card-body">
-                    <p>Total Users: @Model.CurrentCompany.Members.Count()</p>
-                    <hr />
-                    <p>Total Tickets: @Model.Tickets.Count()</p>
-                    <hr />
-                    <p>Total Developers:@Model.Tickets.GroupBy(t => t.DeveloperUserId).Count()</p>
-                    <hr />
-                    <p>Total Submitter:@Model.Tickets.GroupBy(t => t.OwnerUserId).Count()</p>
-                    <hr />
-                    <p>Unassigned Tickets:@Model.Tickets.GroupBy(t => t.DeveloperUserId == null).Count()</p>
+                    <h5 class="card-title text-white">Total Users</h5>
+                    <p class="card-text">@Model.CurrentCompany.Members.Count()</p>
                 </div>
             </div>
         </div>
         <div class="col">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title text-white">Total Tickets</h5>
+                    <p class="card-text">@Model.Tickets.Count()</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title text-white">Unassigned Tickets</h5>
+                    <p class="card-text">@Model.Tickets.GroupBy(t => t.DeveloperUserId == null).Count()</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title text-white">Total Developers</h5>
+                    <p class="card-text">@Model.Tickets.GroupBy(t => t.DeveloperUserId).Count()</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title text-white">Total Submitter</h5>
+                    <p class="card-text">@Model.Tickets.GroupBy(t => t.OwnerUserId).Count()</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--Project Overview and Chart-->
+    <div class="row">
+        <!--Project Overview-->
+        <div class="col-sm-6">
+            <!-- DONUT CHART -->
+            <div class="card card-danger">
+                <div class="card-header">
+                    <h3 class="card-title">Members by Projects</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="userChart">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-6">
             <!-- DONUT CHART -->
             <div class="card card-danger">
                 <div class="card-header">
@@ -102,7 +152,7 @@
                                         <th>
                                             Name
                                         </th>
-                                        @*<th>
+                                        <th>
                                                 Start Date
                                             </th>
                                             <th>
@@ -110,7 +160,7 @@
                                             </th>
                                             <th>
                                                 Project
-                                            </th>*@
+                                            </th>
                                         <th>
 
                                         </th>
@@ -123,7 +173,7 @@
                                             <td>
                                                 @Html.DisplayFor(modelItem => item.Name)
                                             </td>
-                                            @*<td>
+                                            <td>
                                                     @Html.DisplayFor(modelItem => item.StartDate)
                                                 </td>
                                                 <td>
@@ -131,11 +181,12 @@
                                                 </td>
                                                 <td>
                                                     @Html.DisplayFor(modelItem => item.ProjectPriority.Name)
-                                                </td>*@
+                                                </td>
                                             <td>
+
                                                 @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
                                                 {
-                                                    <a asp-controller="Projects" asp-action="Edit" asp-route-id="@item.Id">Edit |</a> 
+                                                    <a asp-controller="Projects" asp-action="Edit" asp-route-id="@item.Id">Edit |</a>
                                                 }
                                                 <a asp-controller="Projects" asp-action="Details" asp-route-id="@item.Id">Details</a> @*|*@
                                                 @*<a asp-controller="Projects" asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
@@ -149,18 +200,7 @@
                 </div>
             </div>
         </div>
-        <div class="col">
-            <!-- DONUT CHART -->
-            <div class="card card-danger">
-                <div class="card-header">
-                    <h3 class="card-title">Members by Projects</h3>
-                </div>
-                <div class="card-body">
-                    <canvas id="userChart">
-                    </canvas>
-                </div>
-            </div>
-        </div>
+        
     </div>
 
     <!--AllTickets-->
@@ -246,13 +286,17 @@
                                                 </td>
 
                                                 <td>
-                                                    @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+
+                                                    @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager")
+                                                    && (await ProjectService.GetProjectManagerAsync(item.Project.Id) == currentUser) ||
+                                                    (currentUser.Id == item.DeveloperUser?.Id) ||
+                                                    (currentUser.Id == item.OwnerUserId))
                                                     {
                                                         <a asp-controller="Tickets" asp-action="Edit" asp-route-id="@item.Id">Edit |</a>
                                                     }
-                                                        <a asp-controller="Tickets" asp-action="Details" asp-route-id="@item.Id">Details</a> @*|*@
-                                                        @*<a asp-controller="Tickets" asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
-                                                    </td>
+                                                    <a asp-controller="Tickets" asp-action="Details" asp-route-id="@item.Id">Details</a> @*|*@
+                                                    @*<a asp-controller="Tickets" asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
+                                                </td>
                                             </tr>
                                         }
                                     </tbody>
@@ -269,60 +313,155 @@
 
 </div>
 
-<!-- Bootstrap JS -->
-<script src="~/js/bootstrap.bundle.min.js"></script>
-<!--plugins-->
-<script src="~/js/jquery.min.js"></script>
-<script src="~/plugins/simplebar/js/simplebar.min.js"></script>
-<script src="~/plugins/metismenu/js/metisMenu.min.js"></script>
-<script src="~/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
-<script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
-<script src="~/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
-<script src="~/js/table-datatable.js"></script>
-<!--app JS-->
-<script src="~/js/app.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <!--plugins-->
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/plugins/simplebar/js/simplebar.min.js"></script>
+    <script src="~/plugins/metismenu/js/metisMenu.min.js"></script>
+    <script src="~/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+    <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/js/table-datatable.js"></script>
+    <!--app JS-->
+    <script src="~/js/app.js"></script>
 
-<script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js" integrity="sha512-VCHVc5miKoln972iJPvkQrUYYq7XpxXzvqNfiul1H4aZDwGBGC0lq373KNleaB2LpnC2a/iNfE5zoRYmB4TRDQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-@section Scripts{
-    <script>
-        //$(function () {
-        //    $("#allTickets").DataTable({
-        //        "responsive": true, "lengthChange": false, "autoWidth": false,
-        //    });
-        //});
-        $("#allTickets").DataTable();
+    <script src="~/plugins/datatable/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js" integrity="sha512-VCHVc5miKoln972iJPvkQrUYYq7XpxXzvqNfiul1H4aZDwGBGC0lq373KNleaB2LpnC2a/iNfE5zoRYmB4TRDQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    @section Scripts{
+        <script>
+            //$(function () {
+            //    $("#allTickets").DataTable({
+            //        "responsive": true, "lengthChange": false, "autoWidth": false,
+            //    });
+            //});
+            $("#allTickets").DataTable();
 
-        $("#allProjects").DataTable();
-        //$(function () {
-        //    $("#allProjects").DataTable({
-        //        "responsive": true, "lengthChange": false, "autoWidth": false,
-        //    });
-        //});
-    </script>
+            $("#allProjects").DataTable();
+            //$(function () {
+            //    $("#allProjects").DataTable({
+            //        "responsive": true, "lengthChange": false, "autoWidth": false,
+            //    });
+            //});
+        </script>
 
 
-    <script type="text/javascript">
-        google.load("visualization", "1", { packages: ["corechart"] });
-        google.setOnLoadCallback(drawChart);
-        function drawChart() {
+        <script type="text/javascript">
+            google.load("visualization", "1", { packages: ["corechart"] });
+            google.setOnLoadCallback(drawChart);
+            function drawChart() {
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/PieChartMethod",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        var data = google.visualization.arrayToDataTable(result);
+
+                        //Pie
+                        var options = {
+                            title: 'Company Ticket Distribution',
+                            //is3D: true
+                        };
+                        var chart = new google.visualization.PieChart($("#chart1")[0]);
+                        chart.draw(data, options);
+                    },
+                    failure: function (result) {
+                        alert(result.d);
+                    },
+                    error: function (result) {
+                        alert(result.d);
+                    }
+                });
+            }
+        </script>
+        <script type="text/javascript">
+            google.load("visualization", "1", { packages: ["corechart"] });
+            google.setOnLoadCallback(drawChart);
+            function drawChart() {
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/PieChartMethod",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        var data = google.visualization.arrayToDataTable(result);
+
+                        //3D Pie
+                        var options = {
+                            title: 'Company Ticket Distribution',
+                            is3D: true
+                        };
+                        var chart = new google.visualization.PieChart($("#chart3D")[0]);
+                        chart.draw(data, options);
+                    },
+                    failure: function (rresult) {
+                        alert(result.d);
+                    },
+                    error: function (result) {
+                        alert(result.d);
+                    }
+                });
+            }
+        </script>
+        <script type="text/javascript">
+            google.load("visualization", "1", { packages: ["corechart"] });
+            google.setOnLoadCallback(drawChart);
+            function drawChart() {
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/PieChartMethod",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        var data = google.visualization.arrayToDataTable(result);
+
+                        //Donut
+                        var options = {
+                            title: 'Company Ticket Distribution',
+                            pieHole: 0.5
+                        };
+                        var chart = new google.visualization.PieChart($("#donut")[0]);
+                        chart.draw(data, options);
+                    },
+                    failure: function (rresult) {
+                        alert(result.d);
+                    },
+                    error: function (result) {
+                        alert(result.d);
+                    }
+                });
+            }
+        </script>
+
+
+        <script type="text/javascript">
             $.ajax({
                 type: "POST",
-                url: "/Home/PieChartMethod",
+                url: "/Home/DonutMethod",
                 data: '{}',
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (result) {
-                    var data = google.visualization.arrayToDataTable(result);
+                    //Donut
+                    var donutChartCanvas = $('#donutChart').get(0).getContext('2d')
+                    var donutData = result
 
-                    //Pie
-                    var options = {
-                        title: 'Company Ticket Distribution',
-                        //is3D: true
-                    };
-                    var chart = new google.visualization.PieChart($("#chart1")[0]);
-                    chart.draw(data, options);
+                    var donutOptions = {
+                        maintainAspectRatio: false,
+                        responsive: true,
+                    }
+                    //Create pie or douhnut chart
+                    // You can switch between pie and douhnut using the method below.
+                    new Chart(donutChartCanvas, {
+                        type: 'doughnut',
+                        data: donutData,
+                        options: donutOptions
+                    })
                 },
                 failure: function (result) {
                     alert(result.d);
@@ -331,141 +470,46 @@
                     alert(result.d);
                 }
             });
-        }
-    </script>
-    <script type="text/javascript">
-        google.load("visualization", "1", { packages: ["corechart"] });
-        google.setOnLoadCallback(drawChart);
-        function drawChart() {
+
+        </script>
+
+
+        <script type="text/javascript">
             $.ajax({
                 type: "POST",
-                url: "/Home/PieChartMethod",
+                url: "/Home/UserChart",
                 data: '{}',
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (result) {
-                    var data = google.visualization.arrayToDataTable(result);
-
-                    //3D Pie
-                    var options = {
-                        title: 'Company Ticket Distribution',
-                        is3D: true
-                    };
-                    var chart = new google.visualization.PieChart($("#chart3D")[0]);
-                    chart.draw(data, options);
-                },
-                failure: function (rresult) {
-                    alert(result.d);
-                },
-                error: function (result) {
-                    alert(result.d);
-                }
-            });
-        }
-    </script>
-    <script type="text/javascript">
-        google.load("visualization", "1", { packages: ["corechart"] });
-        google.setOnLoadCallback(drawChart);
-        function drawChart() {
-            $.ajax({
-                type: "POST",
-                url: "/Home/PieChartMethod",
-                data: '{}',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (result) {
-                    var data = google.visualization.arrayToDataTable(result);
-
                     //Donut
-                    var options = {
-                        title: 'Company Ticket Distribution',
-                        pieHole: 0.5
-                    };
-                    var chart = new google.visualization.PieChart($("#donut")[0]);
-                    chart.draw(data, options);
+                    var donutChartCanvas = $('#userChart').get(0).getContext('2d')
+                    var donutData = result
+
+                    var donutOptions = {
+                        maintainAspectRatio: false,
+                        responsive: true,
+                    }
+                    //Create pie or douhnut chart
+                    // You can switch between pie and douhnut using the method below.
+                    new Chart(donutChartCanvas, {
+                        type: 'doughnut',
+                        data: donutData,
+                        options: donutOptions
+                    })
                 },
-                failure: function (rresult) {
+                failure: function (result) {
                     alert(result.d);
                 },
                 error: function (result) {
                     alert(result.d);
                 }
             });
-        }
-    </script>
 
-
-    <script type="text/javascript">
-        $.ajax({
-            type: "POST",
-            url: "/Home/DonutMethod",
-            data: '{}',
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (result) {
-                //Donut
-                var donutChartCanvas = $('#donutChart').get(0).getContext('2d')
-                var donutData = result
-
-                var donutOptions = {
-                    maintainAspectRatio: false,
-                    responsive: true,
-                }
-                //Create pie or douhnut chart
-                // You can switch between pie and douhnut using the method below.
-                new Chart(donutChartCanvas, {
-                    type: 'doughnut',
-                    data: donutData,
-                    options: donutOptions
-                })
-            },
-            failure: function (result) {
-                alert(result.d);
-            },
-            error: function (result) {
-                alert(result.d);
-            }
-        });
-
-    </script>
-
-
-    <script type="text/javascript">
-        $.ajax({
-            type: "POST",
-            url: "/Home/UserChart",
-            data: '{}',
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (result) {
-                //Donut
-                var donutChartCanvas = $('#userChart').get(0).getContext('2d')
-                var donutData = result
-
-                var donutOptions = {
-                    maintainAspectRatio: false,
-                    responsive: true,
-                }
-                //Create pie or douhnut chart
-                // You can switch between pie and douhnut using the method below.
-                new Chart(donutChartCanvas, {
-                    type: 'doughnut',
-                    data: donutData,
-                    options: donutOptions
-                })
-            },
-            failure: function (result) {
-                alert(result.d);
-            },
-            error: function (result) {
-                alert(result.d);
-            }
-        });
-
-    </script>
+        </script>
 
 
 
-}
+    }
 
 
